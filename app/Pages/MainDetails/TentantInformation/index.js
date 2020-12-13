@@ -77,7 +77,7 @@ class TentantInformation extends Component {
 			goBackFunction: () => this.props.navigation.navigate('TenantPortfolio')
 		});
 	}
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		BackHandler.addEventListener('hardwareBackPress', async () => {
 			await this.props.navigation.setParams({
 				refetchPageName: ''

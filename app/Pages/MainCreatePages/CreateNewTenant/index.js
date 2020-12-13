@@ -54,7 +54,7 @@ class CreateNewTenant extends Component {
             goBackFunction: () => this.props.navigation.navigate("TenantPortfolio")
         })
     }
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         BackHandler.addEventListener("hardwareBackPress", async () => {
             await this.props.navigation.setParams({
                 refetchPageName: ""
@@ -75,163 +75,167 @@ class CreateNewTenant extends Component {
     }
     render() {
         const ProfileImageSize = 100;
-        return <Mutation mutation={newTenant}>
-            {
-                (createNewTenant, { loading, error, data }) => {
-                    if (loading) {
-                        return (
-                            <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
-                        )
-                    }
-                    else if (error) {
-                        return (
-                            <Undefined
-                                text={"Bir hata ile karşılaşıldı : " + error}
-                                type={"error"}
-                            />
-                        )
-                    }
-                    else {
-                        if (data) {
-                            if (this.state.saveStatus === false) {
-                                if (data.newTenant.code === 200) {
-
-                                    Toast.show(data.newTenant.message, Toast.LONG, [
-                                        'UIAlertController',
-                                    ]);
-                                    this.props.navigation.navigate("TenantPortfolio")
-                                }
-                                else {
-                                    this.toastMessage({ data });
-                                }
-                                this.setState({
-                                    saveStatus: true
-                                })
-                            }
+        return (
+            <Mutation mutation={newTenant}>
+                {
+                    (createNewTenant, { loading, error, data }) => {
+                        if (loading) {
+                            return (
+                                <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
+                            )
                         }
-                        return <View style={{ flex: 1 }}>
-                            <ScrollView
-                                style={styles.container}
-                                showsVerticalScrollIndicator={false}
-                            >
-                                <View style={[Shadow, styles.profileContainer]}>
+                        else if (error) {
+                            return (
+                                <Undefined
+                                    text={"Bir hata ile karşılaşıldı : " + error}
+                                    type={"error"}
+                                />
+                            )
+                        }
+                        else {
+                            if (data) {
+                                if (this.state.saveStatus === false) {
+                                    if (data.newTenant.code === 200) {
 
-                                    <View style={[Shadow, styles.headerContainer]}>
-                                        <ProfileImage
-                                            src={this.state.profileImageUrl}
-                                            style={Shadow, { flex: 1, }}
-                                            size={ProfileImageSize}
-                                            editOnPress={() => alert("bastılar")}
-                                        />
-                                    </View>
-
-                                    <DescriptionCard style={[Shadow, { marginTop: ProfileImageSize / 2, marginBottom: BetweenObjectsMargin }]}>
-
-                                        <View style={[styles.profileContentDescriptionCard, {
-                                            marginTop: (BetweenObjectsMargin * ((ProfileImageSize / 2) / BetweenObjectsMargin)) * 1.5,
-                                            padding: GeneralPadding / 2
-                                        }]}>
-                                            <TextInput
-                                                titleText={"Kiracı İsmi"}
-                                                titleView={true}
-                                                value={this.state.fullName}
-                                                onChangeText={(val) => this.setState({ fullName: val })}
-                                                style={{ flex: 1 }}
-
-                                            />
-                                            <TextInput
-                                                titleText={"Tc NO "}
-                                                titleView={true}
-                                                value={this.state.tcIdentity}
-                                                onChangeText={(val) => this.setState({ tcIdentity: val })}
-                                                style={{ flex: 1 }}
-                                                inputMaskType={"tc"}
-                                            />
-                                            <TextInput
-                                                titleText={"Kiracı Telefon Numarası"}
-                                                titleView={true}
-                                                value={this.state.phoneNumber1}
-                                                onChangeText={(val) => this.setState({ phoneNumber1: val })}
-                                                isPhoneNumber={true}
-                                                style={{ flex: 1 }}
-                                                inputMaskType={"phoneNumber"}
-                                            />
-                                            <TextInput
-                                                titleText={"Kiracı Telefon Numarası 2"}
-                                                titleView={true}
-                                                value={this.state.phoneNumber2}
-                                                onChangeText={(val) => this.setState({ phoneNumber2: val })}
-                                                style={{ flex: 1 }}
-                                                isPhoneNumber={true}
-                                                inputMaskType={"phoneNumber"}
-                                            />
-                                            <TextInput
-                                                titleText={"Kiracı Adresi"}
-                                                titleView={true}
-                                                value={this.state.tenantAdress}
-                                                onChangeText={(val) => this.setState({ tenantAdress: val })}
-                                                style={{ flex: 1 }}
-                                            />
-                                            <TextInput
-                                                titleText={"Kefil Adı"}
-                                                titleView={true}
-                                                value={this.state.suretyFullName}
-                                                onChangeText={(val) => this.setState({ suretyFullName: val })}
-                                                style={{ flex: 1 }}
-
-                                            />
-                                            <TextInput
-                                                titleText={"Kefil Tc NO"}
-                                                titleView={true}
-                                                value={this.state.suretyTcIdentity}
-                                                onChangeText={(val) => this.setState({ suretyTcIdentity: val })}
-                                                style={{ flex: 1 }}
-                                                inputMaskType={"tc"}
-                                            />
-                                            <TextInput
-                                                titleText={"Kefil Telefon"}
-                                                titleView={true}
-                                                value={this.state.suretyPhoneNumber}
-                                                onChangeText={(val) => this.setState({ suretyPhoneNumber: val })}
-                                                style={{ flex: 1 }}
-                                                isPhoneNumber={true}
-                                                inputMaskType={"phoneNumber"}
-                                            />
-                                            <TextInput
-                                                titleText={"Kefil Adresi"}
-                                                titleView={true}
-                                                value={this.state.suretyAdress}
-                                                onChangeText={(val) => this.setState({ suretyAdress: val })}
-                                                style={{ flex: 1 }}
-
-                                            />
-                                        </View>
-                                    </DescriptionCard>
-                                    <TouchableHighlight
-                                        style={[Shadow, {
-                                            marginBottom: BetweenObjectsMargin,
-                                            backgroundColor: "#192430"
-                                        }]}
-                                        onPress={() => {
-                                            this.setState({
-                                                saveStatus: false
-                                            })
-                                            createNewTenant({
-                                                variables: this.state
-                                            });
-                                        }}
+                                        Toast.show(data.newTenant.message, Toast.LONG, [
+                                            'UIAlertController',
+                                        ]);
+                                        this.props.navigation.navigate("TenantPortfolio")
+                                    }
+                                    else {
+                                        this.toastMessage({ data });
+                                    }
+                                    this.setState({
+                                        saveStatus: true
+                                    })
+                                }
+                            }
+                            return (
+                                <View style={{ flex: 1 }}>
+                                    <ScrollView
+                                        style={styles.container}
+                                        showsVerticalScrollIndicator={false}
                                     >
-                                        <Text style={{
-                                            color: "white"
-                                        }}>Oluştur</Text>
-                                    </TouchableHighlight>
+                                        <View style={[Shadow, styles.profileContainer]}>
+
+                                            <View style={[Shadow, styles.headerContainer]}>
+                                                <ProfileImage
+                                                    src={this.state.profileImageUrl}
+                                                    style={(Shadow, { flex: 1, })}
+                                                    size={ProfileImageSize}
+                                                    editOnPress={() => alert("bastılar")}
+                                                />
+                                            </View>
+
+                                            <DescriptionCard style={[Shadow, { marginTop: ProfileImageSize / 2, marginBottom: BetweenObjectsMargin }]}>
+
+                                                <View style={[styles.profileContentDescriptionCard, {
+                                                    marginTop: (BetweenObjectsMargin * ((ProfileImageSize / 2) / BetweenObjectsMargin)) * 1.5,
+                                                    padding: GeneralPadding / 2
+                                                }]}>
+                                                    <TextInput
+                                                        titleText={"Kiracı İsmi"}
+                                                        titleView={true}
+                                                        value={this.state.fullName}
+                                                        onChangeText={(val) => this.setState({ fullName: val })}
+                                                        style={{ flex: 1 }}
+
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Tc NO "}
+                                                        titleView={true}
+                                                        value={this.state.tcIdentity}
+                                                        onChangeText={(val) => this.setState({ tcIdentity: val })}
+                                                        style={{ flex: 1 }}
+                                                        inputMaskType={"tc"}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kiracı Telefon Numarası"}
+                                                        titleView={true}
+                                                        value={this.state.phoneNumber1}
+                                                        onChangeText={(val) => this.setState({ phoneNumber1: val })}
+                                                        isPhoneNumber={true}
+                                                        style={{ flex: 1 }}
+                                                        inputMaskType={"phoneNumber"}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kiracı Telefon Numarası 2"}
+                                                        titleView={true}
+                                                        value={this.state.phoneNumber2}
+                                                        onChangeText={(val) => this.setState({ phoneNumber2: val })}
+                                                        style={{ flex: 1 }}
+                                                        isPhoneNumber={true}
+                                                        inputMaskType={"phoneNumber"}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kiracı Adresi"}
+                                                        titleView={true}
+                                                        value={this.state.tenantAdress}
+                                                        onChangeText={(val) => this.setState({ tenantAdress: val })}
+                                                        style={{ flex: 1 }}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kefil Adı"}
+                                                        titleView={true}
+                                                        value={this.state.suretyFullName}
+                                                        onChangeText={(val) => this.setState({ suretyFullName: val })}
+                                                        style={{ flex: 1 }}
+
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kefil Tc NO"}
+                                                        titleView={true}
+                                                        value={this.state.suretyTcIdentity}
+                                                        onChangeText={(val) => this.setState({ suretyTcIdentity: val })}
+                                                        style={{ flex: 1 }}
+                                                        inputMaskType={"tc"}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kefil Telefon"}
+                                                        titleView={true}
+                                                        value={this.state.suretyPhoneNumber}
+                                                        onChangeText={(val) => this.setState({ suretyPhoneNumber: val })}
+                                                        style={{ flex: 1 }}
+                                                        isPhoneNumber={true}
+                                                        inputMaskType={"phoneNumber"}
+                                                    />
+                                                    <TextInput
+                                                        titleText={"Kefil Adresi"}
+                                                        titleView={true}
+                                                        value={this.state.suretyAdress}
+                                                        onChangeText={(val) => this.setState({ suretyAdress: val })}
+                                                        style={{ flex: 1 }}
+
+                                                    />
+                                                </View>
+                                            </DescriptionCard>
+                                            <TouchableHighlight
+                                                style={[Shadow, {
+                                                    marginBottom: BetweenObjectsMargin,
+                                                    backgroundColor: "#192430"
+                                                }]}
+                                                onPress={() => {
+                                                    this.setState({
+                                                        saveStatus: false
+                                                    })
+                                                    createNewTenant({
+                                                        variables: this.state
+                                                    });
+                                                }}
+                                            >
+                                                <Text style={{
+                                                    color: "white"
+                                                }}>Oluştur</Text>
+                                            </TouchableHighlight>
+                                        </View>
+                                    </ScrollView>
                                 </View>
-                            </ScrollView>
-                        </View>
+                            );
+                        }
                     }
                 }
-            }
-        </Mutation>
+            </Mutation>
+        );
 
     }
 }

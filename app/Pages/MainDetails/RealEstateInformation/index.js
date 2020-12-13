@@ -103,7 +103,7 @@ class RealEstateInformation extends Component {
 		});
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		BackHandler.addEventListener('hardwareBackPress', async () => {
 			await this.props.navigation.setParams({
 				refetchPageName: ''
