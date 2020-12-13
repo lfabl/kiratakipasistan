@@ -125,7 +125,7 @@ const TextInput = ({ style, value, onChangeText, placeholder, infoIconView, info
                                 color: isPhoneNumber ? "blue" : "gray",
                             }
                         ]}
-                        placeholderTextColor={typeof editableEffect !== "undefined" && editableEffect === true ? "rgba(0,0,0,0.8)" : null}
+                        placeholderTextColor={typeof editableEffect !== "undefined" && editableEffect === true ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.8)"}
                         editable={typeof editable !== "undefined" ? editable : true}
                         multiline={multiline}
                         mask={
