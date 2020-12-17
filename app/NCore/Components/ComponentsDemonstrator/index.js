@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -38,16 +38,20 @@ const ComponentsDemonstrator = ({ style, title, items, onDeleteItem, onAddItem, 
                 setModelVisible={(val) => setDescriptionModalVisible(val)}
                 modelText={"Yeni demirbaş ekleme sınırına ulaştınız."}
             >
-
             </Modal>
             <ChoiceModal
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
-                title={title}
-                onSubmitPress={() => itemName !== "" ? onAddItem({
-                    itemName: itemName,
-                    images: images
-                }) : null}
+                title={title + "4"}
+                onSubmitPress={() => {
+                    if(itemName !== "") {
+                        onAddItem({
+                            itemName: itemName,
+                            images: images
+                        });
+                        setImages([]);
+                    }
+                }}
             >
                 <View style={styles.modalView}>
                     <TextInput
@@ -69,16 +73,20 @@ const ComponentsDemonstrator = ({ style, title, items, onDeleteItem, onAddItem, 
                     </ImageModule>
                 </View>
             </ChoiceModal>
-
             <ChoiceModal
                 modalVisible={editModalVisible}
                 setModalVisible={setEditModalVisible}
                 title={title}
-                onSubmitPress={() => editItemName !== "" ? onEditItem({
-                    itemName: editItemName,
-                    images: editImages,
-                    index: editIndex
-                }) : null}>
+                onSubmitPress={() => {
+                    if(editItemName !== "")
+                        onEditItem({
+                            itemName: editItemName,
+                            images: JSON.parse(JSON.stringify(editImages)),
+                            index: editIndex
+                        });
+                        setEditImages([]);
+                    }
+                }>
                 <View style={styles.modalView}>
                     <TextInput
                         style={{
@@ -107,11 +115,14 @@ const ComponentsDemonstrator = ({ style, title, items, onDeleteItem, onAddItem, 
                 {
                     disabled ? <TouchableOpacity
                         onPress={() => {
-                            if (items.length < 8) {
-                                setModalVisible(true)
+                            setEditItemName([]);
+                            setEditImages([]);
+                            setEditIndex(0);
+                            if(items.length < 8) {
+                                setModalVisible(true);
                             }
                             else {
-                                setDescriptionModalVisible(true)
+                                setDescriptionModalVisible(true);
                             }
                         }}
                     >
@@ -134,7 +145,8 @@ const ComponentsDemonstrator = ({ style, title, items, onDeleteItem, onAddItem, 
                         items.map((item, index) => {
                             return <TouchableOpacity
                                 key={index}
-                                onPress={() => {
+                                disabled={!disabled}
+                                onPress={!disabled ? null : () => {
                                     if (disabled) {
                                         setEditModalVisible(true);
                                     } else {
@@ -142,7 +154,7 @@ const ComponentsDemonstrator = ({ style, title, items, onDeleteItem, onAddItem, 
                                     }
                                     setEditItemName(item.name);
                                     setEditImages(item.images);
-                                    setEditIndex(index)
+                                    setEditIndex(index);
                                 }}
                             >
                                 <View
@@ -188,14 +200,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: "column",
-        borderBottomWidth: 0.8,
-        borderBottomColor: "grey",
+        borderWidth: 4,
+        borderColor: "white",
+        elevation: 6,
+        padding: 2,
+        borderRadius: 6,
+        backgroundColor: "white"
     },
     header: {
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 6
+        marginBottom: 6,
+        backgroundColor: "white"
     },
     title: {
         fontFamily: "Exo2.0-Black",
@@ -208,8 +225,9 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "space-between",
         backgroundColor: "#DEDEDE",
-        marginBottom: 6,
-        borderRadius: 6
+        padding: 10,
+        borderRadius: 6,
+        marginBottom: 8
     },
     itemText: {
         fontFamily: "Exo2.0-Medium",

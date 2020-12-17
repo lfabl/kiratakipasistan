@@ -526,65 +526,6 @@ class RealEstateInformation extends Component {
 																				style={{ flex: 1 }}
 																				editable={editMode}
 																			/>
-																			{realEstateType !== 'other' ? (
-																				<ComponentsDemonstrator
-																					title={'Demirbas'}
-																					disabled={editMode}
-																					items={this.state.fixtureDatas}
-																					onDeleteItem={(indexnew) => {
-																						const newFixtureDatas = [];
-																						this.state.fixtureDatas.map(
-																							(item, index) => {
-																								index === indexnew
-																									? null
-																									: newFixtureDatas.push(
-																											item
-																										);
-																							}
-																						);
-																						this.setState({
-																							fixtureDatas: newFixtureDatas
-																						});
-																					}}
-																					onAddItem={(name) => {
-																						let newFixtureDatas = this.state
-																							.fixtureDatas;
-																						newFixtureDatas.push({
-																							name: name.itemName,
-																							images: name.images
-																						});
-																						this.setState({
-																							fixtureDatas: newFixtureDatas
-																						});
-																					}}
-																					onEditItem={(data) => {
-																						const newFixtureDatas = [];
-																						this.state.fixtureDatas.map(
-																							(item, index) => {
-																								index === data.index
-																									? newFixtureDatas.push(
-																											{
-																												name:
-																													data.itemName,
-																												images:
-																													data.images
-																											}
-																										)
-																									: newFixtureDatas.push(
-																											item
-																										);
-																							}
-																						);
-																						this.setState({
-																							fixtureDatas: newFixtureDatas
-																						});
-																					}}
-																					style={{
-																						marginBottom:
-																							BetweenObjectsMargin / 2
-																					}}
-																				/>
-																			) : null}
 
 																			<ComboBox
 																				types={rentalTypes}
@@ -914,6 +855,49 @@ class RealEstateInformation extends Component {
 																				disabled={!editMode}
 																			/>
 																		</DescriptionCard>
+																		{realEstateType !== 'other' ? (
+																			<ComponentsDemonstrator
+																				title={'Demirbas'}
+																				disabled={editMode}
+																				items={this.state.fixtureDatas}
+																				onDeleteItem={(_index) => {
+																					let newFixtureData = JSON.parse(JSON.stringify(this.state.fixtureDatas));
+																					console.warn(_index, newFixtureData.map(e => e.name));
+																					newFixtureData.splice(_index, 1);
+																					this.setState({
+																						fixtureDatas: newFixtureData
+																					});
+																				}}
+																				onAddItem={(name) => {
+																					console.warn
+																					let newFixtureDatas = JSON.parse(JSON.stringify(this.state.fixtureDatas));
+																					newFixtureDatas.push({
+																						name: name.itemName,
+																						images: name.images
+																					});
+																					this.setState({
+																						fixtureDatas: newFixtureDatas
+																					});
+																				}}
+																				onEditItem={(data) => {
+																					let newFixtureData = JSON.parse(JSON.stringify(this.state.fixtureDatas));
+																					for(let i = 0; i < newFixtureData.length; i++) {
+																						if(data.index === i) {
+																							newFixtureData[i].name = data.itemName;
+																							newFixtureData[i].images = data.images;
+																							break;
+																						}
+																					}
+																					this.setState({
+																						fixtureDatas: newFixtureData
+																					});
+																				}}
+																				style={{
+																					marginBottom:
+																						BetweenObjectsMargin / 2
+																				}}
+																			/>
+																		) : null}
 																		{editMode ? null : (
 																			<TouchableHighlight
 																				style={[
@@ -929,7 +913,7 @@ class RealEstateInformation extends Component {
 																					this.props.navigation.navigate(
 																						'RealestateNotificationSettings',
 																						{
-																							"realestateID": realEstateID
+																							realestateID: realEstateID
 																						}
 																					);
 																				}}
