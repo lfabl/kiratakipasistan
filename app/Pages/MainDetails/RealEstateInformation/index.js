@@ -80,20 +80,90 @@ class RealEstateInformation extends Component {
 			detailRent: '0',
 			paymentPeriodType: 'monthly',
 			paymentPeriodDate: null,
-			deposit: '0'
+			deposit: '0',
+
+			tempDatas: {
+				editMode: false,
+				saveStatus: false,
+				deleteRealEstateStatus: false,
+				realEstateID: this.props.navigation.getParam('realEstateID'),
+				realEstateType: 'store',
+				usageType: 'null',
+				fixtureDatas: [],
+				title: '',
+				adress: '',
+				rentalType: 'unattached',
+				electricity: '',
+				water: '',
+				naturalGas: '',
+				TCIPNo: '',
+				ownerNameSurname: '',
+				ownerManagerPhoneNumber: '',
+				ownerTcIdentity: '',
+				ownerIban: '',
+				detailDues: '0',
+				detailManagerPhoneNumber: '',
+				detailAdditionalInformation: '',
+				numberOfRoom: '0+0',
+				purposeOfUsage: '',
+				detailRent: '0',
+				paymentPeriodType: 'monthly',
+				paymentPeriodDate: null,
+				deposit: '0'
+			}
 		};
 	}
 
-	changeEditMode() {
+	changeEditMode(revertTempStatus) {
 		const { editMode } = this.state;
 		UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-		this.props.navigation.setParams(
-			editMode ? { pageName: 'Emlak Bilgileri' } : { pageName: 'Emlak Bilgilerini Düzenle' }
-		);
-		this.setState({
-			editMode: !editMode
-		});
+
+		/* Edit Mode Control */
+		if (editMode === true) {
+			/* Datas */
+			const newData = Object.assign({}, this.state);
+			const tempData = Object.assign({}, this.state.tempDatas);
+
+			/* Delete Another Key in new Data */
+			["deleteRealEstateStatus", "saveStatus", "tempDatas", "editMode", "realEstateID"].forEach((val) => delete newData[val])
+			if (JSON.stringify(newData) !== JSON.stringify(tempData) && revertTempStatus !== false) {
+				Alert.alert(
+					'Düzenlemeden Çık',
+					'Düzenleme modundan çıkarsanız yaptığınız değişiklikler kayıt altına alınmayacaktır eminmisiniz?',
+					[
+						{
+							text: 'İptal Et',
+							onPress: () => console.log('Cancel Pressed'),
+							style: 'cancel'
+						},
+						{
+							text: 'Tamam',
+							onPress: () => this.revertTempData()
+						}
+					],
+					{
+						cancelable: true
+					}
+				);
+			}
+			else {
+				this.setState({
+					editMode: !editMode
+				});
+				this.props.navigation.setParams(
+					editMode ? { pageName: 'Emlak Bilgileri' } : { pageName: 'Emlak Bilgilerini Düzenle' }
+				);
+			}
+		}
+		else {
+			this.setState({
+				editMode: !editMode
+			});
+			this.props.navigation.setParams(
+				editMode ? { pageName: 'Emlak Bilgileri' } : { pageName: 'Emlak Bilgilerini Düzenle' }
+			);
+		}
 	}
 
 	componentDidMount() {
@@ -119,8 +189,9 @@ class RealEstateInformation extends Component {
 		const message = await data.updateRealEstate.message;
 		const title = 'Emlak';
 		const errorMessage = await typeValidMessageConverter({ message, title });
-		return Toast.show(errorMessage, Toast.LONG, [ 'UIAlertController' ]);
+		return Toast.show(errorMessage, Toast.LONG, ['UIAlertController']);
 	}
+
 	async fixtureDataConvert(args) {
 		return await new Promise(async (resolve, reject) => {
 			if (args.length !== 0) {
@@ -159,6 +230,41 @@ class RealEstateInformation extends Component {
 			}
 		});
 	}
+
+	revertTempData = () => {
+		const { tempDatas,editMode } = this.state;
+		this.props.navigation.setParams(
+			editMode ? { pageName: 'Emlak Bilgileri' } : { pageName: 'Emlak Bilgilerini Düzenle' }
+		);
+		this.setState({
+			realEstateType: tempDatas.realEstateType,
+			usageType: tempDatas.usageType,
+			fixtureDatas: tempDatas.fixtureDatas,
+			title: tempDatas.title,
+			adress: tempDatas.adress,
+			rentalType: tempDatas.rentalType,
+			electricity: tempDatas.electricity,
+			water: tempDatas.water,
+			naturalGas: tempDatas.naturalGas,
+			TCIPNo: tempDatas.TCIPNo,
+			ownerNameSurname: tempDatas.ownerNameSurname,
+			ownerManagerPhoneNumber: tempDatas.ownerManagerPhoneNumber,
+			ownerTcIdentity: tempDatas.ownerTcIdentity,
+			ownerIban: tempDatas.ownerIban,
+			detailDues: tempDatas.detailDues,
+			detailManagerPhoneNumber: tempDatas.detailManagerPhoneNumber,
+			detailAdditionalInformation: tempDatas.detailAdditionalInformation,
+			numberOfRoom: tempDatas.numberOfRoom,
+			purposeOfUsage: tempDatas.purposeOfUsage,
+			detailRent: tempDatas.detailRent,
+			paymentPeriodType: tempDatas.paymentPeriodType,
+			paymentPeriodDate: tempDatas.paymentPeriodDate,
+			deposit: tempDatas.deposit,
+			tempDatas: tempDatas,
+			editMode: false
+		})
+	}
+
 	render() {
 		const {
 			editMode,
@@ -186,7 +292,7 @@ class RealEstateInformation extends Component {
 			deposit
 		} = this.state;
 		return (
-			<Mutation mutation={deleteRealEstate} refetchQueries={[ `getAvailableRealEstatesForContract` ]}>
+			<Mutation mutation={deleteRealEstate} refetchQueries={[`getAvailableRealEstatesForContract`]}>
 				{(deleteRealEstateData, { loading, error, data }) => {
 					if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} color={'#1A2430'} />;
 					else if (error) return <View>{alert('Bir hata oluştu' + error)}</View>;
@@ -194,10 +300,10 @@ class RealEstateInformation extends Component {
 						if (data) {
 							if (this.state.deleteRealEstateStatus === false) {
 								if (data.deleteRealEstate.code === 200) {
-									Toast.show(data.deleteRealEstate.message, Toast.LONG, [ 'UIAlertController' ]);
+									Toast.show(data.deleteRealEstate.message, Toast.LONG, ['UIAlertController']);
 									this.props.navigation.navigate('RealEstatePortfolio');
 								} else {
-									Toast.show(data.deleteRealEstate.message, Toast.LONG, [ 'UIAlertController' ]);
+									Toast.show(data.deleteRealEstate.message, Toast.LONG, ['UIAlertController']);
 								}
 								this.setState({
 									deleteRealEstateStatus: true
@@ -205,7 +311,7 @@ class RealEstateInformation extends Component {
 							}
 						}
 						return (
-							<Mutation mutation={updateRealEstate}>
+							<Mutation mutation={updateRealEstate} refetchQueries={[{ query: getRealEstate }]}>
 								{(updateRealEstateData, { loading, error, data }) => {
 									if (loading)
 										return <ActivityIndicator size="large" style={{ flex: 1 }} color={'#1A2430'} />;
@@ -217,7 +323,7 @@ class RealEstateInformation extends Component {
 													Toast.show(data.updateRealEstate.message, Toast.LONG, [
 														'UIAlertController'
 													]);
-													this.changeEditMode();
+													this.changeEditMode(false);
 												} else {
 													this.toastMessage({ data });
 												}
@@ -230,7 +336,8 @@ class RealEstateInformation extends Component {
 										return (
 											<Query
 												query={getRealEstate}
-												fetchPolicy="cache-and-network"
+												fetchPolicy={"network-only"}
+												notifyOnNetworkStatusChange={true}
 												variables={{
 													realEstateID: realEstateID
 												}}
@@ -245,8 +352,8 @@ class RealEstateInformation extends Component {
 															adress: getRealEstate.adress,
 															rentalType:
 																getRealEstate.rentalType.length !== 0 &&
-																getRealEstate.rentalType[0].status &&
-																getRealEstate.rentalType[0].status === 'continuation'
+																	getRealEstate.rentalType[0].status &&
+																	getRealEstate.rentalType[0].status === 'continuation'
 																	? getRealEstate.rentalType[0].status
 																	: 'unattached',
 															electricity: getRealEstate.electricity,
@@ -273,7 +380,47 @@ class RealEstateInformation extends Component {
 															deposit:
 																getRealEstate.deposit !== null
 																	? getRealEstate.deposit
-																	: '0'
+																	: '0',
+
+
+															tempDatas: {
+																realEstateType: getRealEstate.type,
+																usageType: getRealEstate.usageType,
+																fixtureDatas: getRealEstate.fixtureDatas,
+																title: getRealEstate.title,
+																adress: getRealEstate.adress,
+																rentalType:
+																	getRealEstate.rentalType.length !== 0 &&
+																		getRealEstate.rentalType[0].status &&
+																		getRealEstate.rentalType[0].status === 'continuation'
+																		? getRealEstate.rentalType[0].status
+																		: 'unattached',
+																electricity: getRealEstate.electricity,
+																water: getRealEstate.water,
+																naturalGas: getRealEstate.naturalGas,
+																TCIPNo: getRealEstate.TCIPNo,
+																ownerNameSurname: getRealEstate.ownerNameSurname,
+																ownerManagerPhoneNumber:
+																	getRealEstate.ownerManagerPhoneNumber,
+																ownerTcIdentity: getRealEstate.ownerTcIdentity,
+																ownerIban: getRealEstate.ownerIban,
+																detailDues: getRealEstate.detailDues,
+																detailManagerPhoneNumber:
+																	getRealEstate.detailManagerPhoneNumber,
+																detailAdditionalInformation:
+																	getRealEstate.detailAdditionalInformation,
+																numberOfRoom: getRealEstate.numberOfRoom,
+																purposeOfUsage: getRealEstate.purposeOfUsage,
+																detailRent: getRealEstate.detailRent,
+																paymentPeriodType: getRealEstate.paymentPeriod.type,
+																paymentPeriodDate: new Date(
+																	getRealEstate.paymentPeriod.date
+																),
+																deposit:
+																	getRealEstate.deposit !== null
+																		? getRealEstate.deposit
+																		: '0'
+															}
 														});
 													}
 												}}
@@ -339,13 +486,13 @@ class RealEstateInformation extends Component {
 																					paymentPeriod.date &&
 																					paymentPeriod.date !== ''
 																					? await newContractData({
-																							variables: datas
-																						})
+																						variables: datas
+																					})
 																					: Toast.show(
-																							'Lütfen sözleşme verilerini tam giriniz.',
-																							Toast.LONG,
-																							[ 'UIAlertController' ]
-																						)
+																						'Lütfen sözleşme verilerini tam giriniz.',
+																						Toast.LONG,
+																						['UIAlertController']
+																					)
 																				: null;
 																		}}
 																	/>
@@ -388,12 +535,12 @@ class RealEstateInformation extends Component {
 																									this.state
 																										.fixtureDatas
 																								);
+
+
 																								await updateRealEstateData(
 																									{
 																										variables: {
-																											realEstateID: this
-																												.state
-																												.realEstateID,
+																											realEstateID: this.state.realEstateID,
 																											type: realEstateType,
 																											usageType: usageType,
 																											fixtureDatas: newFixtureData,
@@ -426,6 +573,7 @@ class RealEstateInformation extends Component {
 																										}
 																									}
 																								);
+
 																							}}
 																						>
 																							<Icon
@@ -459,8 +607,8 @@ class RealEstateInformation extends Component {
 																							editMode ? (
 																								'times-circle'
 																							) : (
-																								'edit'
-																							)
+																									'edit'
+																								)
 																						}
 																						color={'#272727'}
 																						size={Normalize(20)}
@@ -536,8 +684,8 @@ class RealEstateInformation extends Component {
 																					rentalType === 'unattached' ? (
 																						false
 																					) : (
-																						editMode
-																					)
+																							editMode
+																						)
 																				}
 																				title={'Kira Durumu'}
 																				style={{
@@ -717,8 +865,8 @@ class RealEstateInformation extends Component {
 																						editMode === true ? (
 																							detailDues
 																						) : (
-																							detailDues + ' ₺'
-																						)
+																								detailDues + ' ₺'
+																							)
 																					}
 																					onChangeText={(val) =>
 																						this.setState({
@@ -737,8 +885,8 @@ class RealEstateInformation extends Component {
 																					editMode === true ? (
 																						deposit
 																					) : (
-																						deposit + ' ₺'
-																					)
+																							deposit + ' ₺'
+																						)
 																				}
 																				onChangeText={(val) =>
 																					this.setState({ deposit: val })}
@@ -767,8 +915,8 @@ class RealEstateInformation extends Component {
 																					realEstateType !== 'other' ? (
 																						'Ek Bilgiler'
 																					) : (
-																						'Açıklama'
-																					)
+																							'Açıklama'
+																						)
 																				}
 																				titleView={true}
 																				value={detailAdditionalInformation}
@@ -818,8 +966,8 @@ class RealEstateInformation extends Component {
 																					editMode ? (
 																						detailRent
 																					) : (
-																						detailRent + ' ₺'
-																					)
+																							detailRent + ' ₺'
+																						)
 																				}
 																				onChangeText={(val) =>
 																					this.setState({ detailRent: val })}
@@ -855,49 +1003,23 @@ class RealEstateInformation extends Component {
 																				disabled={!editMode}
 																			/>
 																		</DescriptionCard>
-																		{realEstateType !== 'other' ? (
-																			<ComponentsDemonstrator
-																				title={'Demirbas'}
-																				disabled={editMode}
-																				items={this.state.fixtureDatas}
-																				onDeleteItem={(_index) => {
-																					let newFixtureData = JSON.parse(JSON.stringify(this.state.fixtureDatas));
-																					console.warn(_index, newFixtureData.map(e => e.name));
-																					newFixtureData.splice(_index, 1);
-																					this.setState({
-																						fixtureDatas: newFixtureData
-																					});
-																				}}
-																				onAddItem={(name) => {
-																					console.warn
-																					let newFixtureDatas = JSON.parse(JSON.stringify(this.state.fixtureDatas));
-																					newFixtureDatas.push({
-																						name: name.itemName,
-																						images: name.images
-																					});
-																					this.setState({
-																						fixtureDatas: newFixtureDatas
-																					});
-																				}}
-																				onEditItem={(data) => {
-																					let newFixtureData = JSON.parse(JSON.stringify(this.state.fixtureDatas));
-																					for(let i = 0; i < newFixtureData.length; i++) {
-																						if(data.index === i) {
-																							newFixtureData[i].name = data.itemName;
-																							newFixtureData[i].images = data.images;
-																							break;
-																						}
-																					}
-																					this.setState({
-																						fixtureDatas: newFixtureData
-																					});
-																				}}
-																				style={{
-																					marginBottom:
-																						BetweenObjectsMargin / 2
-																				}}
-																			/>
-																		) : null}
+
+																		{
+																			realEstateType !== "other" ?
+																				<ComponentsDemonstrator
+																					title={"Demirbas"}
+																					disabled={editMode}
+																					items={this.state.fixtureDatas}
+																					setItems={(datas) => {
+																						this.setState({
+																							fixtureDatas: datas
+																						})
+																					}}
+																					style={{
+																						marginBottom: BetweenObjectsMargin / 2
+																					}}
+																				/> : null
+																		}
 																		{editMode ? null : (
 																			<TouchableHighlight
 																				style={[

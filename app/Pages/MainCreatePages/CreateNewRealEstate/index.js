@@ -101,7 +101,44 @@ class CreateNewRealEstate extends Component {
             'UIAlertController',
         ]);
     }
-
+    async fixtureDataConvert(args) {
+		return await new Promise(async (resolve, reject) => {
+			if (args.length !== 0) {
+				const newFixtureDatas = [];
+				for (let index = 0; index < args.length; index++) {
+					const element = args[index];
+					if (element.images.length !== 0) {
+						const newFixtureDatasImages = [];
+						for (let index = 0; index < element.images.length; index++) {
+							const fixTureDatas = element.images[index];
+							const newDatas = {};
+							newDatas.image = fixTureDatas.image;
+							if (typeof fixTureDatas['newImage'] !== 'undefined') {
+								newDatas.newImage = fixTureDatas.newImage;
+							}
+							newFixtureDatasImages.push(newDatas);
+							if (element.images.length - 1 === index) {
+								newFixtureDatas.push({
+									name: element.name,
+									images: newFixtureDatasImages
+								});
+							}
+						}
+					} else {
+						newFixtureDatas.push({
+							name: element.name,
+							images: []
+						});
+					}
+					if (args.length - 1 === index) {
+						resolve(newFixtureDatas);
+					}
+				}
+			} else {
+				resolve([]);
+			}
+		});
+	}
     render() {
         const {
             editMode, realEstateType, usageType, title, adress, rentalType,
@@ -131,7 +168,6 @@ class CreateNewRealEstate extends Component {
                         else {
                             if (data) {
                                 if (this.state.saveStatus === false) {
-                                    console.warn(data.newRealEstate)
                                     if (data.newRealEstate.code === 200) {
                                         Toast.show(data.newRealEstate.message, Toast.LONG, [
                                             'UIAlertController',
@@ -196,49 +232,6 @@ class CreateNewRealEstate extends Component {
                                                 style={{ flex: 1 }}
 
                                             />
-                                            {
-                                                realEstateType !== "other" ?
-                                                    <ComponentsDemonstrator
-                                                        title={"Demirbas"}
-                                                        disabled={true}
-                                                        items={this.state.fixtureDatas}
-                                                        onDeleteItem={(indexnew) => {
-                                                            const newFixtureDatas = [];
-                                                            this.state.fixtureDatas.map((item, index) => {
-                                                                index === indexnew ?
-                                                                    null
-                                                                    : newFixtureDatas.push(item)
-                                                            })
-                                                            this.setState({
-                                                                fixtureDatas: newFixtureDatas
-                                                            })
-                                                        }}
-                                                        onAddItem={(name) => {
-                                                            let newFixtureDatas = this.state.fixtureDatas;
-                                                            newFixtureDatas.push({ name: name.itemName, images: name.images })
-                                                            this.setState({
-                                                                fixtureDatas: newFixtureDatas
-                                                            })
-
-                                                        }}
-
-                                                        onEditItem={(data) => {
-                                                            const newFixtureDatas = [];
-                                                            this.state.fixtureDatas.map((item, index) => {
-                                                                index === data.index ?
-                                                                    newFixtureDatas.push({ name: data.itemName, images: data.images })
-                                                                    : newFixtureDatas.push(item)
-                                                            })
-                                                            this.setState({
-                                                                fixtureDatas: newFixtureDatas
-                                                            })
-                                                            console.warn(this.state.fixtureDatas)
-                                                        }}
-                                                        style={{
-                                                            marginBottom: BetweenObjectsMargin / 2
-                                                        }}
-                                                    /> : null
-                                            }
 
                                         </DescriptionCard>
                                         {
@@ -441,15 +434,40 @@ class CreateNewRealEstate extends Component {
                                                 value={this.state.paymentPeriodDate}
                                             />
                                         </DescriptionCard>
+                                        {
+                                            realEstateType !== "other" ?
+                                                <ComponentsDemonstrator
+                                                    title={"Demirbas"}
+                                                    disabled={true}
+                                                    items={this.state.fixtureDatas}
+                                                    setItems={(datas) => {
+                                                        this.setState({
+                                                            fixtureDatas: datas
+                                                        })
+                                                    }}
+                                                    style={{
+                                                        marginBottom: BetweenObjectsMargin / 2
+                                                    }}
+                                                /> : null
+                                        }
                                         <TouchableHighlight
                                             style={[Shadow, {
                                                 marginBottom: BetweenObjectsMargin,
                                                 backgroundColor: "#192430",
                                             }]}
-                                            onPress={() => {
+                                            onPress={async () => {
+                                                /*
                                                 this.setState({
                                                     saveStatus: false
                                                 })
+                                                */
+                                               
+                                                const newFixtureData = await this.fixtureDataConvert(
+                                                    this.state
+                                                        .fixtureDatas
+                                                );
+                                                
+
                                                 createNewRealEstate({
                                                     variables: {
                                                         type: realEstateType,
@@ -479,6 +497,7 @@ class CreateNewRealEstate extends Component {
                                                         deposit: deposit
                                                     }
                                                 });
+
                                             }}
                                         >
                                             <Text style={{

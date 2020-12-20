@@ -30,7 +30,7 @@ const validation = async ({ text, validationTypes }) => {
     }
 }
 
-const TextInput = ({ style, value, onChangeText, placeholder, infoIconView, infoIconOnPress, passIconView, titleText, titleView, isPhoneNumber, editable, editableEffect, multiline, validationTypes, isPassword, inputMaskType, onRef, onSubmitEditing, autoCapitalize}) => {
+const TextInput = ({ style, containerStyle, value, onChangeText, placeholder, infoIconView, infoIconOnPress, passIconView, titleText, titleView, isPhoneNumber, editable, editableEffect, multiline, validationTypes, isPassword, inputMaskType, onRef, onSubmitEditing, autoCapitalize }) => {
     const [errorMessageView, setErrorMessageView] = useState(true);
     const [errorMessageText, setErrorMessageText] = useState("");
     const [passVisiable, setPassVisiable] = useState(isPassword);
@@ -45,9 +45,9 @@ const TextInput = ({ style, value, onChangeText, placeholder, infoIconView, info
 
         Linking.openURL(phoneNumber)
     }
-    
+
     return (
-        <View style={{ marginBottom: 20 }}>
+        <View style={[{ marginBottom: 20 }, containerStyle]}>
             <View style={{ flexDirection: "column" }}>
                 {
                     titleView ? <Text
@@ -172,7 +172,7 @@ const TextInput = ({ style, value, onChangeText, placeholder, infoIconView, info
                             </Icon>
                         </TouchableOpacity> : null
                     }
-          
+
                 </View>
             </View>
             {

@@ -268,6 +268,7 @@ class RealEstateProtfolio extends Component {
                                                                         })
                                                                     }}
                                                                     onSubmitPress={() => {
+                                                                        onChangeContractModalVisible(false);
                                                                         deleteContract({
                                                                             variables: {
                                                                                 tenantID: "",

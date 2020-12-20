@@ -270,6 +270,7 @@ class TenantPortfolio extends Component {
                                                                         })
                                                                     }}
                                                                     onSubmitPress={() => {
+                                                                        onChangeContractModalVisible(false);
                                                                         deleteContract({
                                                                             variables: {
                                                                                 tenantID: this.state.deleteContractModalID,

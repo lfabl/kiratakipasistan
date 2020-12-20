@@ -62,6 +62,7 @@ const TenantContractModal = ({ contractModalVisible, onChangeContractModalVisibl
         title={contractModalTitle}
         setModalVisible={(val) => onChangeContractModalVisible(val)}
         onSubmitPress={() => {
+            onChangeContractModalVisible(false);
             if (availibleControl === true) {
                 const newContractData = {
                     tenantID: selectID,
