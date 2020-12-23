@@ -4,7 +4,8 @@ import {
     View,
     ScrollView,
     LayoutAnimation,
-    UIManager
+    UIManager,
+    Text
 } from "react-native";
 
 //NCore Theme
@@ -250,6 +251,7 @@ const TenantContractModal = ({ contractModalVisible, onChangeContractModalVisibl
                                                                                             onChangeDateValue={(val) => setPaymentPeriodDate(val)}
                                                                                             value={paymentPeriodDate}
                                                                                         />
+                                                                                        <Text>Her periyodun tamamlanmasına 15 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
                                                                                     </View>
                                                                                 }
                                                                                 else {

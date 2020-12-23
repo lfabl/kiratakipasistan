@@ -17,7 +17,9 @@ class ManualRefecth extends Component {
     }
     render() {
         return <View style={{
-            flex: 1
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
         }}>
             <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
         </View>

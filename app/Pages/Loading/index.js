@@ -21,7 +21,7 @@ class Loading extends Component {
             if (userToken !== "") {
                 const userTokenControlResult = await userTokenControl({
                     token: userToken
-                })
+                });
                 if (userTokenControlResult.code === 200) {
                     setTimeout(() => {
                         OneSignal.init(onesignalInitID, { kOSSettingsKeyAutoPrompt: true });
@@ -29,19 +29,18 @@ class Loading extends Component {
                         OneSignal.sendTag("user_id", userTokenControlResult.userID);
                         this.props.navigation.navigate("Home");
                     }, 500)
-                }
-                else {
+                } else {
                     this.props.navigation.navigate("Signin");
                 }
+            } else {
+                this.props.navigation.navigate("Signin");
             }
-        }
-        else {
+        } else {
             this.props.navigation.navigate("Signin");
         }
     };
     render() {
         const { navigation } = this.props;
-        console.log(navigation)
         return <View style={{
             flex: 1,
             alignItems: "center",

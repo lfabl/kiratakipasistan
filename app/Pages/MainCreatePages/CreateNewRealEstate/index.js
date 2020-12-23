@@ -153,7 +153,15 @@ class CreateNewRealEstate extends Component {
                     (createNewRealEstate, { loading, error, data }) => {
                         if (loading) {
                             return (
-                                <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
+                                </View>
                             )
                         }
                         else if (error) {
@@ -433,6 +441,7 @@ class CreateNewRealEstate extends Component {
                                                 })}
                                                 value={this.state.paymentPeriodDate}
                                             />
+                                            <Text>Her periyodun tamamlanmasına 15 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
                                         </DescriptionCard>
                                         {
                                             realEstateType !== "other" ?
