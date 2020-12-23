@@ -57,9 +57,21 @@ const RealEstateContractModal = ({ contractModalVisible, onChangeContractModalVi
         }
 
     }
+
     useEffect(() => {
-        console.warn("Bababa")
-    })
+        if (!contractModalVisible) {
+            setSelectID("");
+            setRealEstateTypes(0);
+            setRentalDate(new Date());
+            setContractPeriod("0");
+            setRentalPrice(null);
+            setPaymentType("cash");
+            setPaymentPeriodType("monthly");
+            setPaymentPeriodDate(new Date());
+            setAvailibleControl(false);
+        }
+    }, [contractModalVisible]);
+    
     return <ChoiceModal
         modalVisible={contractModalVisible}
         title={contractModalTitle}

@@ -42,6 +42,7 @@ const TenantContractModal = ({ contractModalVisible, onChangeContractModalVisibl
     const [paymentPeriodType, setPaymentPeriodType] = useState("monthly");
     const [paymentPeriodDate, setPaymentPeriodDate] = useState(new Date());
     const [availibleControl, setAvailibleControl] = useState(false);
+
     const TenantTypeConverter = (args) => {
         let converterTypes = [];
         for (let index = 0; index < args.length; index++) {
@@ -56,7 +57,19 @@ const TenantContractModal = ({ contractModalVisible, onChangeContractModalVisibl
         }
 
     }
-
+    useEffect(() => {
+        if (!contractModalVisible) {
+            setselectID("");
+            setTenantTypes(0);
+            setRentalDate(new Date());
+            setContractPeriod("0");
+            setRentalPrice(null);
+            setPaymentType("cash");
+            setPaymentPeriodType("monthly");
+            setPaymentPeriodDate(new Date());
+            setAvailibleControl(false);
+        }
+    }, [contractModalVisible]);
     return <ChoiceModal
         modalVisible={contractModalVisible}
         title={contractModalTitle}
