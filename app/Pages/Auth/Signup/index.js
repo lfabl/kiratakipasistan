@@ -32,10 +32,10 @@ class Signup extends Component {
         this.userNameInputRef = React.createRef();
         this.passwordInputRef = React.createRef();
         this.state = {
-            mail: "gorkem_148@hotmail.com",
-            officeName: "371",
-            userName: "gorkem",
-            password: "12",
+            mail: "",
+            officeName: "",
+            userName: "",
+            password: "",
             modalVisible: false
         }
     }
