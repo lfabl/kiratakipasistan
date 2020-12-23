@@ -19,6 +19,7 @@ import { ReactNativeFile } from 'apollo-upload-client';
 //NCore
 import TouchableHighlight from "../../TouchableHighlight";
 import Modal from "../../Modal";
+import ImagePicker from "../../ImagePicker";
 
 
 const width = Dimensions.get("screen").width;
@@ -26,6 +27,7 @@ const height = Dimensions.get("screen").height;
 const ImageModule = ({ images, setImages, disabled }) => {
     /* Controller States */
     const [existImages, setExistImages] = useState(typeof images !== "undefined" ? images : []);
+    const [modalVisible, setModalVisible] = useState(false);
     const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
     const [lightBoxOpen, setLightBoxOpen] = useState(false);
 
@@ -129,7 +131,71 @@ const ImageModule = ({ images, setImages, disabled }) => {
             setModelVisible={(val) => setDescriptionModalVisible(val)}
             modelText={"Yeni demirbaş fotoğrafı ekleme sınırına ulaştınız."}
         />
+        <ImagePicker
+            visible={modalVisible}
+            setVisible={(val) => {
+                setModalVisible(val)
 
+            }}
+            onPressPhoneCamera={() => {
+                setModalVisible(false)
+
+                ImageCropPicker.openCamera({}).then((response) => {
+                    if (response.didCancel === true) {
+                    }
+                    else {
+                        let _existImages = JSON.parse(JSON.stringify(existImages));
+
+                        const pathArray = response.path.toString().split("/");
+                        const name = pathArray[pathArray.length - 1];
+                        const file = new ReactNativeFile({
+                            uri: response.path,
+                            name: name,
+                            type: response.mime
+                        });
+                        _existImages.push({
+                            newImage: file
+                        });
+
+                        setImages(_existImages);
+                        setExistImages(_existImages);
+                    }
+                });
+            }}
+            onPressGalery={() => {
+                setModalVisible(false)
+
+                ImageCropPicker.openPicker({
+                    multiple: true,
+                    maxFiles: (8 - existImages.length) > 0
+                }).then((response) => {
+                    if (response.didCancel === true) {
+                    }
+                    else {
+                        let _existImages = JSON.parse(JSON.stringify(existImages));
+                        response.forEach(m => {
+                            if (8 - _existImages.length > 0) {
+                                const pathArray = m.path.toString().split("/");
+                                const name = pathArray[pathArray.length - 1];
+                                const file = new ReactNativeFile({
+                                    uri: m.path,
+                                    name: name,
+                                    type: m.mime
+                                });
+                                _existImages.push({
+                                    newImage: file
+                                });
+                            }
+                        });
+                        setImages(_existImages);
+                        setExistImages(_existImages);
+                    }
+                });
+
+            }}
+        >
+
+        </ImagePicker>
         {/* Render Photos */}
         {
             <ScrollView
@@ -148,32 +214,8 @@ const ImageModule = ({ images, setImages, disabled }) => {
                         style={styles.newPhotoButtonContainer}
                         onPress={() => {
                             if (existImages.length < 8) {
-                                ImageCropPicker.openPicker({
-                                    multiple: true,
-                                    maxFiles: (8 - existImages.length) > 0
-                                }).then((response) => {
-                                    if (response.didCancel === true) {
-                                    }
-                                    else {
-                                        let _existImages = JSON.parse(JSON.stringify(existImages));
-                                        response.forEach(m => {
-                                            if (8 - _existImages.length > 0) {
-                                                const pathArray = m.path.toString().split("/");
-                                                const name = pathArray[pathArray.length - 1];
-                                                const file = new ReactNativeFile({
-                                                    uri: m.path,
-                                                    name: name,
-                                                    type: m.mime
-                                                });
-                                                _existImages.push({
-                                                    newImage: file
-                                                });
-                                            }
-                                        });
-                                        setImages(_existImages);
-                                        setExistImages(_existImages);
-                                    }
-                                });
+                                setModalVisible(true);
+
                             }
                             else {
                                 setDescriptionModalVisible(true)

@@ -18,13 +18,13 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Lightbox from 'react-native-lightbox';
 
 
-const ProfileImage = ({ src, style, size, editMode, editOnPress }) => {
+const ProfileImage = ({ src, style, size, profileEditMode, editOnPress, onEditLongPress }) => {
     const width = Dimensions.get("screen").width;
     const height = Dimensions.get("screen").height;
 
     const [lightBoxOpen, setLightBoxOpen] = useState(false)
-    return (
-
+    return (<>
+    
         <Lightbox
             didOpen={() => setLightBoxOpen(true)}
             onOpen={() => src && src !== "" ? setLightBoxOpen(true) : false}
@@ -34,7 +34,7 @@ const ProfileImage = ({ src, style, size, editMode, editOnPress }) => {
 
             }}
             underlayColor={"rgba(0,0,0,0)"}
-            springConfig={{tension: 900000, friction: 900000}}
+            springConfig={{ tension: 900000, friction: 900000 }}
 
             activeProps={
                 {
@@ -70,7 +70,7 @@ const ProfileImage = ({ src, style, size, editMode, editOnPress }) => {
                 }}
             >
                 {
-                    editMode ?
+                    profileEditMode === true ?
                         <TouchableOpacity
                             style={{
                                 width: Normalize(size),
@@ -84,6 +84,7 @@ const ProfileImage = ({ src, style, size, editMode, editOnPress }) => {
                                 flexDirection: "column",
                                 zIndex: 3
                             }}
+                            onLongPress={() => onEditLongPress()}
                             onPress={() => editOnPress()}
                         >
                             <Icon
@@ -133,7 +134,7 @@ const ProfileImage = ({ src, style, size, editMode, editOnPress }) => {
             </ImageBackground>
         </Lightbox>
 
-    )
+    </>)
 };
 
 export default ProfileImage;

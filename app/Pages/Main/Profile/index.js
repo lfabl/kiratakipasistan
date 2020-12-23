@@ -6,6 +6,7 @@ import {
     ScrollView,
     LayoutAnimation,
     UIManager,
+    Dimensions,
     ActivityIndicator,
     TouchableOpacity
 } from "react-native";
@@ -20,9 +21,7 @@ import { updateProfile } from "../../../Server/graphql/Mutation/updateProfile";
 import { updateProfileImage } from "../../../Server/graphql/Mutation/updateProfileImage";
 import { ReactNativeFile } from 'apollo-upload-client';
 import { serverAdres } from "../../../Server/config";
-import {
-    ImageCropPicker
-} from 'react-native-image-crop-picker'
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 //Font Awsome Icon
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -45,6 +44,7 @@ import TextInput from "../../../NCore/Components/TextInput";
 import { typeValidMessageConverter } from "../../../NCore/Tools/typeValidMessageConverter";
 import { isoStringToDate } from "../../../NCore/Tools/isoStringToDate"
 import AsyncStorage from "@react-native-community/async-storage";
+import ImagePicker from "../../../NCore/Components/ImagePicker";
 
 class Profile extends Component {
     constructor(props) {
@@ -55,14 +55,23 @@ class Profile extends Component {
             userName: "",
             fullName: "",
             mail: "",
-            profileImageName: "",
             registerDate: "",
             oldPassword: "",
             newPassword: "",
             newPasswordAgain: "",
+            profileImageName: "",
             profileImage: null,
             deleteProfileImage: false,
-            preview: false
+            preview: false,
+            modalVisible: false,
+            tempDatas: {
+                oldPassword: "",
+                newPassword: "",
+                newPasswordAgain: "",
+                profileImageName: "",
+                profileImage: null,
+                deleteProfileImage: false,
+            }
         };
         this.changeEditMode = this.changeEditMode.bind(this);
     }
@@ -71,16 +80,69 @@ class Profile extends Component {
             pageName: "Profil"
         })
     }
-    changeEditMode() {
+
+    changeEditMode(revertTempStatus) {
         const { profileEditMode } = this.state;
-        UIManager.setLayoutAnimationEnabledExperimental(true)
+        UIManager.setLayoutAnimationEnabledExperimental(true);
         LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+
+        /* Edit Mode Control */
+        if (profileEditMode === true) {
+            /* Datas */
+            const newData = Object.assign({}, this.state);
+            const tempData = Object.assign({}, this.state.tempDatas);
+            /* Delete Another Key in new Data */
+            ["profileEditMode", "saveStatus", "userName", "fullName", "mail", "registerDate", "tempDatas", "modalVisible", "preview"].forEach((val) => delete newData[val])
+
+            if (JSON.stringify(newData) !== JSON.stringify(tempData) && revertTempStatus !== false) {
+                Alert.alert(
+                    'Düzenlemeden Çık',
+                    'Düzenleme modundan çıkarsanız yaptığınız değişiklikler kayıt altına alınmayacaktır eminmisiniz?',
+                    [
+                        {
+                            text: 'İptal Et',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Tamam',
+                            onPress: () => this.revertTempData()
+                        }
+                    ],
+                    {
+                        cancelable: true
+                    }
+                );
+            }
+            else {
+                this.setState({
+                    profileEditMode: !profileEditMode
+                });
+                this.props.navigation.setParams(profileEditMode ? { pageName: "Profil", } : { pageName: "Profil Düzenle" })
+
+            }
+        }
+        else {
+            this.setState({
+                profileEditMode: !profileEditMode
+            });
+            this.props.navigation.setParams(profileEditMode ? { pageName: "Profil", } : { pageName: "Profil Düzenle" })
+
+        }
+
+    }
+    revertTempData = () => {
+        const { tempDatas, profileEditMode } = this.state;
         this.props.navigation.setParams(profileEditMode ? { pageName: "Profil", } : { pageName: "Profil Düzenle" })
+
         this.setState({
-            profileEditMode: !profileEditMode,
             oldPassword: "",
             newPassword: "",
-            newPasswordAgain: ""
+            newPasswordAgain: "",
+            profileImageName: tempDatas.profileImageName,
+            profileImage: tempDatas.profileImage,
+            deleteProfileImage: false,
+            profileEditMode: false
         })
     }
     async toastMessage({ data }) {
@@ -95,18 +157,11 @@ class Profile extends Component {
     render() {
         const ProfileImageSize = 100;
         const { profileEditMode } = this.state;
-        const options = {
-            title: 'Select Avatar',
-            customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-        };
 
-        return <Mutation mutation={updateProfileImage}>
+
+        return <Mutation mutation={updateProfile}>
             {
-                (updateProfileImageFunc, { loading, error, data }) => {
+                (updateProfileData, { loading, error, data }) => {
                     if (loading) {
                         return (
                             <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
@@ -124,14 +179,20 @@ class Profile extends Component {
                     else {
                         if (data) {
                             if (this.state.saveStatus === false) {
-                                if (data.updateProfileImage.code === 200) {
-                                    Toast.show(data.updateProfileImage.message, Toast.LONG, [
+                                if (data.updateProfile.code === 200) {
+                                    Toast.show(data.updateProfile.message, Toast.LONG, [
                                         'UIAlertController',
                                     ]);
+                                    this.setState({
+                                        oldPassword: "",
+                                        newPassword: "",
+                                        newPasswordAgain: "",
+                                    })
+                                    this.changeEditMode(false)
                                 }
                                 else {
-                                    if (data.updateProfileImage.code === 500) {
-                                        Toast.show(data.updateProfileImage.message, Toast.LONG, [
+                                    if (data.updateProfile.code === 500) {
+                                        Toast.show(data.updateProfile.message, Toast.LONG, [
                                             'UIAlertController',
                                         ]);
                                     }
@@ -144,9 +205,37 @@ class Profile extends Component {
                                 })
                             }
                         }
-                        return <Mutation mutation={updateProfile}>
+                        return <Query
+                            query={getProfile}
+                            fetchPolicy="cache-and-network"
+                            onCompleted={async (data) => {
+                                if (data.getProfile.response.code === 200) {
+                                    console.log("girdi")
+                                    const getUserData = data.getProfile.data
+                                    const registerDate = await isoStringToDate(getUserData.registerDate, "date")
+                                    this.setState({
+                                        fullName: getUserData.fullName,
+                                        userName: getUserData.userName,
+                                        mail: getUserData.mail,
+                                        registerDate: registerDate,
+                                        profileImageName: profileEditMode === false ? getUserData.profileImageName : this.state.profileImageName,
+                                        profileImage: profileEditMode === false ? null : this.state.profileImage,
+                                        deleteProfileImage: profileEditMode === false ? false: this.state.deleteProfileImage,
+                                       
+                                        tempDatas: {
+                                            oldPassword: "",
+                                            newPassword: "",
+                                            newPasswordAgain: "",
+                                            profileImageName: getUserData.profileImageName,
+                                            profileImage: null,
+                                            deleteProfileImage: false,
+                                        }
+                                    })
+                                }
+                            }}
+                        >
                             {
-                                (updateProfileData, { loading, error, data }) => {
+                                ({ loading, error, data }) => {
                                     if (loading) {
                                         return (
                                             <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
@@ -162,308 +251,297 @@ class Profile extends Component {
                                         )
                                     }
                                     else {
-                                        if (data) {
-                                            if (this.state.saveStatus === false) {
-                                                if (data.updateProfile.code === 200) {
-                                                    Toast.show(data.updateProfile.message, Toast.LONG, [
-                                                        'UIAlertController',
-                                                    ]);
-                                                    this.changeEditMode()
-                                                }
-                                                else {
-                                                    if (data.updateProfile.code === 500) {
-                                                        Toast.show(data.updateProfile.message, Toast.LONG, [
-                                                            'UIAlertController',
-                                                        ]);
-                                                    }
-                                                    else {
-                                                        this.toastMessage({ data });
-                                                    }
-                                                }
-                                                this.setState({
-                                                    saveStatus: true
-                                                })
-                                            }
-                                        }
-                                        return <Query
-                                            query={getProfile}
-                                            fetchPolicy="cache-and-network"
-                                            onCompleted={async (data) => {
-                                                if (data.getProfile.response.code === 200) {
-                                                    const getUserData = data.getProfile.data
-                                                    const registerDate = await isoStringToDate(getUserData.registerDate, "date")
-                                                    this.setState({
-                                                        fullName: getUserData.fullName,
-                                                        userName: getUserData.userName,
-                                                        mail: getUserData.mail,
-                                                        registerDate: registerDate,
-                                                        profileImageName: getUserData.profileImageName,
-                                                        profileImage: null
-                                                    })
-                                                }
-                                            }}
-                                        >
-                                            {
-                                                ({ loading, error, data }) => {
-                                                    if (loading) {
-                                                        return (
-                                                            <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
-                                                        )
-                                                    }
-                                                    else if (error) {
-                                                        return (
-                                                            <View>
+                                        if (data.getProfile.response.code === 200) {
+                                            return <View style={{ flex: 1, marginTop: GeneralPadding }}>
+                                                <ImagePicker
+                                                    visible={this.state.modalVisible}
+                                                    setVisible={(val) => {
+                                                        this.setState({
+                                                            modalVisible: val
+                                                        })
+                                                    }}
+                                                    onPressPhoneCamera={() => {
+                                                        this.setState({
+                                                            modalVisible: false
+                                                        })
+                                                        ImageCropPicker.openCamera({}).then((response) => {
+                                                            if (response.didCancel === true) {
+                                                            }
+                                                            else {
+                                                                this.setState({
+                                                                    deleteProfileImage: false,
+                                                                    profileImageName: response.path,
+                                                                    profileImage: response
+                                                                });
+                                                            }
+                                                        });
+                                                    }}
+                                                    onPressGalery={() => {
+                                                        this.setState({
+                                                            modalVisible: false
+                                                        })
+                                                        ImageCropPicker.openPicker({
+                                                            multiple: false,
+                                                            maxFiles: 1
+                                                        }).then((response) => {
+                                                            if (response.didCancel === true) {
+                                                            }
+                                                            else {
+
+                                                                this.setState({
+                                                                    deleteProfileImage: false,
+                                                                    profileImageName: response.path,
+                                                                    profileImage: response
+                                                                });
+                                                            }
+                                                        });
+
+                                                    }}
+                                                    onPressDelete={() => {
+                                                        this.setState({
+                                                            modalVisible: false
+                                                        })
+                                                        Alert.alert(
+                                                            'Profil Resmini Sil',
+                                                            'Profil resmini silmek istediğinize eminmisiniz?',
+                                                            [
                                                                 {
-                                                                    alert("Bir hata oluştu" + error)
+                                                                    text: 'İptal Et',
+                                                                    onPress: () => console.log('Cancel Pressed'),
+                                                                    style: 'cancel'
+                                                                },
+                                                                {
+                                                                    text: 'Tamam',
+                                                                    onPress: () => {
+                                                                        this.setState({
+                                                                            deleteProfileImage: true,
+                                                                            profileImageName: "",
+                                                                            profileImage: null
+                                                                        })
+                                                                    }
                                                                 }
-                                                            </View>
-                                                        )
-                                                    }
-                                                    else {
-                                                        if (data.getProfile.response.code === 200) {
-                                                            return <View style={{ flex: 1, marginTop: GeneralPadding }}>
+                                                            ],
+                                                            {
+                                                                cancelable: true
+                                                            }
+                                                        );
 
-                                                                <ScrollView
-                                                                    style={styles.container}
-                                                                    showsVerticalScrollIndicator={false}
+                                                    }}
+                                                >
+
+                                                </ImagePicker>
+
+                                                <ScrollView
+                                                    style={styles.container}
+                                                    showsVerticalScrollIndicator={false}
+                                                >
+                                                    <View style={[Shadow, styles.profileContainer]}>
+                                                        <View style={[styles.headerContainer, Shadow]}>
+
+                                                            <ProfileImage
+                                                                src={
+                                                                    this.state.profileImage !== null ? this.state.profileImageName :
+                                                                        this.state.profileImageName !== "" ? serverAdres + "/profileImages/" + this.state.profileImageName : this.state.profileImageName
+                                                                }
+                                                                style={Shadow, { flex: 1, }}
+                                                                size={ProfileImageSize}
+                                                                profileEditMode={this.state.profileEditMode}
+                                                                onEditLongPress={() => {
+                                                                }}
+                                                                editOnPress={async () => {
+                                                                    this.setState({
+                                                                        modalVisible: true
+                                                                    })
+                                                                }}
+                                                            />
+
+                                                            <View
+                                                                style={[
+                                                                    styles.headerControler,
+                                                                    {
+                                                                        position: "absolute",
+                                                                        top: ProfileImageSize / 2,
+                                                                        paddingHorizontal: 10,
+                                                                        paddingTop: 5
+                                                                    }
+                                                                ]}
+                                                            >
+                                                                <TouchableOpacity
+                                                                    onPress={() => this.changeEditMode()}
                                                                 >
-                                                                    <View style={[Shadow, styles.profileContainer]}>
-                                                                        <View style={[styles.headerContainer, Shadow]}>
+                                                                    <Icon
+                                                                        name={
+                                                                            profileEditMode ? "times" : "edit"
+                                                                        }
+                                                                        color={"#272727"}
+                                                                        size={Normalize(20)}
+                                                                        style={{
+                                                                            alignSelf: "flex-start",
+                                                                            padding: Normalize(10),
+                                                                            paddingBottom: 20,
+                                                                            paddingLeft: 30
+                                                                        }}
+                                                                    >
+                                                                    </Icon>
+                                                                </TouchableOpacity>
+                                                                {
+                                                                    !profileEditMode ? null : <TouchableOpacity
+                                                                        onPress={async () => {
+                                                                            const { oldPassword, newPassword, newPasswordAgain } = this.state;
+                                                                            const variables = {};
+                                                                            if (this.state.deleteProfileImage !== false) {
+                                                                                variables.deleteProfileImage = true;
+                                                                            }
 
-                                                                            <ProfileImage
-                                                                                src={
-                                                                                    this.state.profileImage !== null ? this.state.profileImageName :
-                                                                                        this.state.profileImageName !== "" ? serverAdres + "/profileImages/" + this.state.profileImageName : this.state.profileImageName
-                                                                                }
-                                                                                style={Shadow, { flex: 1, }}
-                                                                                size={ProfileImageSize}
-                                                                                editMode={this.state.profileEditMode}
+                                                                            else if (this.state.profileImage !== null) {
+                                                                                const pathArray = this.state.profileImage.path.toString().split("/");
+                                                                                const name = pathArray[pathArray.length - 1];
+                                                                                const file = new ReactNativeFile({
+                                                                                    uri: this.state.profileImage.path,
+                                                                                    name: name,
+                                                                                    type: this.state.profileImage.mime,
+                                                                                });
+                                                                                variables.profileImage = file
+                                                                            }
 
-                                                                                editOnPress={async () => {
-                                                                                    ImageCropPicker.openPicker({
-                                                                                        noData: true,
-                                                                                        mediaType: "photo",
-                                                                                        title: "Fotoğraf Seçin",
-                                                                                        cancelButtonTitle: "İptal",
-                                                                                        takePhotoButtonTitle: "Telefon kamerası",
-                                                                                        chooseFromLibraryButtonTitle: "Kütüphaneden seçin",
-                                                                                        customButtons: [{ name: 'fb', title: 'Profil resmini kaldırın' }],
-                                                                                        quality: 0.5
-                                                                                    }, async (response) => {
-                                                                                        if (response.didCancel === true) {
+                                                                            if (newPassword !== "" || newPasswordAgain !== "") {
+                                                                                if (oldPassword !== "") {
+                                                                                    variables.oldPassword = md5(oldPassword);
+                                                                                    if (newPassword !== "") {
+                                                                                        if (newPassword !== newPasswordAgain) {
+                                                                                            Toast.show("Yeni Şifreler Uyuşmuyor", Toast.LONG, [
+                                                                                                'UIAlertController',
+                                                                                            ]);
                                                                                         }
                                                                                         else {
+                                                                                            variables.newPassword = md5(newPassword)
                                                                                             this.setState({
                                                                                                 saveStatus: false
                                                                                             })
-                                                                                            if (response.customButton) {
-                                                                                                this.setState({
-                                                                                                    deleteProfileImage: true,
-                                                                                                    profileImageName: "",
-                                                                                                    profileImage: null
-                                                                                                }, async () => {
-                                                                                                    await updateProfileImageFunc({
-                                                                                                        variables: {
-                                                                                                            deleteProfileImage: true,
-                                                                                                            profileImageName: "",
-                                                                                                        }
-                                                                                                    })
-                                                                                                })
-                                                                                            } else {
-                                                                                                let variables = {}
-                                                                                                this.setState({
-                                                                                                    deleteProfileImage: false,
-                                                                                                    profileImageName: response.uri,
-                                                                                                    profileImage: response
-                                                                                                }, async () => {
-                                                                                                    const file = await new ReactNativeFile({
-                                                                                                        uri: this.state.profileImage.uri,
-                                                                                                        name: this.state.profileImage.fileName,
-                                                                                                        type: this.state.profileImage.type,
-                                                                                                    });
-                                                                                                    variables.profileImage = await file
-                                                                                                    await updateProfileImageFunc({
-                                                                                                        variables: variables
-                                                                                                    })
-
-                                                                                                });
-                                                                                            }
+                                                                                            await updateProfileData({
+                                                                                                variables: variables,
+                                                                                            })
                                                                                         }
-                                                                                    });
-
-                                                                                }}
-                                                                            />
-
-                                                                            <View
-                                                                                style={[
-                                                                                    styles.headerControler,
-                                                                                    {
-                                                                                        position: "absolute",
-                                                                                        top: ProfileImageSize / 2
                                                                                     }
-                                                                                ]}
-                                                                            >
-                                                                                <TouchableOpacity
-                                                                                    onPress={() => this.changeEditMode()}
-                                                                                >
-                                                                                    <Icon
-                                                                                        name={
-                                                                                            profileEditMode ? "times" : "edit"
-                                                                                        }
-                                                                                        color={"#272727"}
-                                                                                        size={Normalize(20)}
-                                                                                        style={{
-                                                                                            alignSelf: "flex-start",
-                                                                                            padding: Normalize(10),
-                                                                                            paddingBottom: 20,
-                                                                                            paddingLeft: 20
-                                                                                        }}
-                                                                                    >
-                                                                                    </Icon>
-                                                                                </TouchableOpacity>
-                                                                                {
-                                                                                    !profileEditMode ? null : <TouchableOpacity
-                                                                                        onPress={async () => {
-                                                                                            const { oldPassword, newPassword, newPasswordAgain } = this.state;
-
-                                                                                            if (newPassword !== "" || newPasswordAgain !== "") {
-                                                                                                if (oldPassword !== "") {
-                                                                                                    variables.oldPassword = md5(oldPassword);
-                                                                                                    if (newPassword !== "") {
-                                                                                                        if (newPassword !== newPasswordAgain) {
-                                                                                                            Toast.show("Yeni Şifreler Uyuşmuyor", Toast.LONG, [
-                                                                                                                'UIAlertController',
-                                                                                                            ]);
-                                                                                                        }
-                                                                                                        else {
-                                                                                                            variables.newPassword = md5(newPassword)
-                                                                                                            this.setState({
-                                                                                                                saveStatus: false
-                                                                                                            })
-                                                                                                            await updateProfileData({
-                                                                                                                variables: variables,
-                                                                                                            })
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                                else {
-                                                                                                    Toast.show("Lütfen Şifrenizi giriniz.", Toast.LONG, [
-                                                                                                        'UIAlertController',
-                                                                                                    ]);
-                                                                                                }
-
-                                                                                            }
-                                                                                        }}
-                                                                                    >
-                                                                                        <Icon
-                                                                                            name={"save"}
-                                                                                            color={"#272727"}
-                                                                                            size={Normalize(20)}
-                                                                                            style={{
-                                                                                                alignSelf: "flex-start",
-                                                                                                padding: Normalize(10),
-                                                                                                paddingBottom: 20,
-                                                                                                paddingRight: 20
-                                                                                            }}
-
-                                                                                        />
-                                                                                    </TouchableOpacity>
                                                                                 }
-                                                                            </View>
-                                                                        </View>
-
-                                                                        <DescriptionCard style={[Shadow, { marginTop: ProfileImageSize / 2, zIndex: -1 }]}>
-
-                                                                            <View style={[styles.profileContentDescriptionCard, {
-                                                                                marginTop: (BetweenObjectsMargin * ((ProfileImageSize / 2) / BetweenObjectsMargin)) * 1.5
-                                                                            }]}>
-                                                                                <Text style={[styles.profileConentTextDescriptionCard, {
-                                                                                    borderBottomColor: profileEditMode ? "#F1F1F1" : "#DEDEDE",
-
-                                                                                }]}>
-                                                                                    {this.state.fullName}
-                                                                                </Text>
-                                                                                <Text style={[styles.profileConentTextDescriptionCard, {
-                                                                                    fontSize: Normalize(16),
-                                                                                    borderBottomColor: profileEditMode ? "#F1F1F1" : "#DEDEDE",
-                                                                                }]}>
-                                                                                    {"@" + this.state.userName}
-                                                                                </Text>
-                                                                            </View>
-                                                                            {
-                                                                                profileEditMode ? <View style={styles.editContainer}>
-                                                                                    <TextInput
-                                                                                        placeholder={this.state.mail}
-                                                                                        style={{ flex: 1 }}
-                                                                                        editable={false}
-                                                                                        editableEffect={true}
-                                                                                    ></TextInput>
-                                                                                    <TextInput
-                                                                                        placeholder={"Eski Şifre"}
-                                                                                        value={this.state.oldPassword}
-                                                                                        isPassword={true}
-                                                                                        onChangeText={(val) => this.setState({ oldPassword: val })}
-                                                                                        style={{ flex: 1 }}
-                                                                                        validationTypes={[
-                                                                                            {
-                                                                                                isEmptyString: true
-                                                                                            }
-                                                                                        ]}
-                                                                                    ></TextInput>
-                                                                                    <TextInput
-                                                                                        placeholder={"Yeni Şifre"}
-                                                                                        isPassword={true}
-                                                                                        value={this.state.newPassword}
-                                                                                        onChangeText={(val) => this.setState({ newPassword: val })}
-                                                                                        style={{ flex: 1 }}
-                                                                                        validationTypes={[
-                                                                                            {
-                                                                                                isEmptyString: true
-                                                                                            }
-                                                                                        ]}
-                                                                                    ></TextInput>
-                                                                                    <TextInput
-                                                                                        placeholder={"Yeni Şifre Tekrar"}
-                                                                                        value={this.state.newPasswordAgain}
-                                                                                        isPassword={true}
-                                                                                        onChangeText={(val) => this.setState({ newPasswordAgain: val })}
-                                                                                        style={{ flex: 1 }}
-                                                                                        validationTypes={[
-                                                                                            {
-                                                                                                isEmptyString: true
-                                                                                            }
-                                                                                        ]}
-                                                                                    ></TextInput>
-                                                                                </View> : null
+                                                                                else {
+                                                                                    Toast.show("Lütfen Şifrenizi giriniz.", Toast.LONG, [
+                                                                                        'UIAlertController',
+                                                                                    ]);
+                                                                                }
                                                                             }
-                                                                        </DescriptionCard>
+                                                                            else {
+                                                                                await updateProfileData({
+                                                                                    variables: variables,
+                                                                                })
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <Icon
+                                                                            name={"save"}
+                                                                            color={"#272727"}
+                                                                            size={Normalize(20)}
+                                                                            style={{
+                                                                                alignSelf: "flex-start",
+                                                                                padding: Normalize(10),
+                                                                                paddingBottom: 20,
+                                                                                paddingRight: 20
+                                                                            }}
 
-                                                                        <DescriptionCard style={[Shadow, styles.dateDescriptionCard, {
-                                                                            marginTop: 20
-                                                                        }]}>
-                                                                            <Text style={styles.dateTitleDescriptionCard}>
-                                                                                Kayıt Tarihi :
-                                                            </Text>
-                                                                            <Text style={styles.dateContentDescriptionCard}>
-                                                                                {this.state.registerDate}
-                                                                            </Text>
-                                                                        </DescriptionCard>
-                                                                    </View>
-                                                                </ScrollView>
+                                                                        />
+                                                                    </TouchableOpacity>
+                                                                }
                                                             </View>
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        </Query>
+                                                        </View>
+
+                                                        <DescriptionCard style={[Shadow, { marginTop: ProfileImageSize / 2, zIndex: -1 }]}>
+
+                                                            <View style={[styles.profileContentDescriptionCard, {
+                                                                marginTop: (BetweenObjectsMargin * ((ProfileImageSize / 2) / BetweenObjectsMargin)) * 1.5
+                                                            }]}>
+                                                                <Text style={[styles.profileConentTextDescriptionCard, {
+                                                                    borderBottomColor: profileEditMode ? "#F1F1F1" : "#DEDEDE",
+
+                                                                }]}>
+                                                                    {this.state.fullName}
+                                                                </Text>
+                                                                <Text style={[styles.profileConentTextDescriptionCard, {
+                                                                    fontSize: Normalize(16),
+                                                                    borderBottomColor: profileEditMode ? "#F1F1F1" : "#DEDEDE",
+                                                                }]}>
+                                                                    {"@" + this.state.userName}
+                                                                </Text>
+                                                            </View>
+                                                            {
+                                                                profileEditMode ? <View style={styles.editContainer}>
+                                                                    <TextInput
+                                                                        placeholder={this.state.mail}
+                                                                        style={{ flex: 1 }}
+                                                                        editable={false}
+                                                                        editableEffect={true}
+                                                                    ></TextInput>
+                                                                    <TextInput
+                                                                        placeholder={"Eski Şifre"}
+                                                                        value={this.state.oldPassword}
+                                                                        isPassword={true}
+                                                                        onChangeText={(val) => this.setState({ oldPassword: val })}
+                                                                        style={{ flex: 1 }}
+                                                                        validationTypes={[
+                                                                            {
+                                                                                isEmptyString: true
+                                                                            }
+                                                                        ]}
+                                                                    ></TextInput>
+                                                                    <TextInput
+                                                                        placeholder={"Yeni Şifre"}
+                                                                        isPassword={true}
+                                                                        value={this.state.newPassword}
+                                                                        onChangeText={(val) => this.setState({ newPassword: val })}
+                                                                        style={{ flex: 1 }}
+                                                                        validationTypes={[
+                                                                            {
+                                                                                isEmptyString: true
+                                                                            }
+                                                                        ]}
+                                                                    ></TextInput>
+                                                                    <TextInput
+                                                                        placeholder={"Yeni Şifre Tekrar"}
+                                                                        value={this.state.newPasswordAgain}
+                                                                        isPassword={true}
+                                                                        onChangeText={(val) => this.setState({ newPasswordAgain: val })}
+                                                                        style={{ flex: 1 }}
+                                                                        validationTypes={[
+                                                                            {
+                                                                                isEmptyString: true
+                                                                            }
+                                                                        ]}
+                                                                    ></TextInput>
+                                                                </View> : null
+                                                            }
+                                                        </DescriptionCard>
+
+                                                        <DescriptionCard style={[Shadow, styles.dateDescriptionCard, {
+                                                            marginTop: 20
+                                                        }]}>
+                                                            <Text style={styles.dateTitleDescriptionCard}>
+                                                                Kayıt Tarihi :
+                                                            </Text>
+                                                            <Text style={styles.dateContentDescriptionCard}>
+                                                                {this.state.registerDate}
+                                                            </Text>
+                                                        </DescriptionCard>
+                                                    </View>
+                                                </ScrollView>
+                                            </View>
+                                        }
                                     }
                                 }
                             }
-
-                        </Mutation >
+                        </Query>
                     }
                 }
             }
+
         </Mutation >
     }
 }
@@ -491,12 +569,12 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     headerControler: {
-        width: "100%",
+        width: Dimensions.get("window").width - 50,
         flexDirection: "row-reverse",
         justifyContent: "space-between",
         alignItems: "baseline",
         position: "relative",
-        padding: 2,
+        paddingLeft: 5,
 
     },
     profileContentDescriptionCard: {

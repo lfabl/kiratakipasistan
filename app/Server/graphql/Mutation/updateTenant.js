@@ -13,6 +13,8 @@ export const updateTenant = gql`
         $suretyTcIdentity: String,
         $suretyPhoneNumber: String,
         $suretyAdress: String,
+        $profileImage: Upload,
+        $deleteProfileImage: Boolean,
     ){
         updateTenant(
             tenantID:  $tenantID
@@ -25,7 +27,9 @@ export const updateTenant = gql`
             suretyFullName: $suretyFullName,
             suretyTcIdentity: $suretyTcIdentity,
             suretyPhoneNumber:  $suretyPhoneNumber,
-            suretyAdress: $suretyAdress
+            suretyAdress: $suretyAdress,
+            profileImage: $profileImage,
+            deleteProfileImage: $deleteProfileImage,
         ) {
             message,
             code
