@@ -279,9 +279,9 @@ class TentantInformation extends Component {
 															suretyPhoneNumber: getTenantData.suretyPhoneNumber,
 															suretyAdress: getTenantData.suretyAdress,
 															registerDate: registerDate,
-															profileImageName: this.state.profileEditMode !== false ? getTenantData.profileImageName : this.state.profileImageName,
-															profileImage: this.state.profileEditMode !== false ? null : this.state.profileImage,
-															deleteProfileImage: this.state.profileEditMode !== false ? false: this.state.deleteProfileImage,
+															profileImageName: getTenantData.profileImageName,
+															profileImage: null,
+															deleteProfileImage: false,
 															tempDatas: {
 																fullName: getTenantData.fullName,
 																tcIdentity: getTenantData.tcIdentity,
@@ -332,7 +332,10 @@ class TentantInformation extends Component {
 																			this.setState({
 																				modalVisible: false
 																			})
-																			ImageCropPicker.openCamera({}).then((response) => {
+																			ImageCropPicker.openCamera({
+																				mediaType: "photo",
+
+																			}).then((response) => {
 																				if (response.didCancel === true) {
 																				}
 																				else {
@@ -353,7 +356,9 @@ class TentantInformation extends Component {
 																			})
 																			ImageCropPicker.openPicker({
 																				multiple: false,
-																				maxFiles: 1
+																				maxFiles: 1,
+																				mediaType: "photo",
+
 																			}).then((response) => {
 																				if (response.didCancel === true) {
 																				}

@@ -179,6 +179,9 @@ class Profile extends Component {
                     else {
                         if (data) {
                             if (this.state.saveStatus === false) {
+                                this.setState({
+                                    saveStatus: true
+                                })
                                 if (data.updateProfile.code === 200) {
                                     Toast.show(data.updateProfile.message, Toast.LONG, [
                                         'UIAlertController',
@@ -200,9 +203,7 @@ class Profile extends Component {
                                         this.toastMessage({ data });
                                     }
                                 }
-                                this.setState({
-                                    saveStatus: true
-                                })
+
                             }
                         }
                         return <Query
@@ -220,8 +221,8 @@ class Profile extends Component {
                                         registerDate: registerDate,
                                         profileImageName: profileEditMode === false ? getUserData.profileImageName : this.state.profileImageName,
                                         profileImage: profileEditMode === false ? null : this.state.profileImage,
-                                        deleteProfileImage: profileEditMode === false ? false: this.state.deleteProfileImage,
-                                       
+                                        deleteProfileImage: profileEditMode === false ? false : this.state.deleteProfileImage,
+
                                         tempDatas: {
                                             oldPassword: "",
                                             newPassword: "",
@@ -264,7 +265,9 @@ class Profile extends Component {
                                                         this.setState({
                                                             modalVisible: false
                                                         })
-                                                        ImageCropPicker.openCamera({}).then((response) => {
+                                                        ImageCropPicker.openCamera({
+                                                            mediaType: "photo",
+                                                        }).then((response) => {
                                                             if (response.didCancel === true) {
                                                             }
                                                             else {
@@ -282,7 +285,8 @@ class Profile extends Component {
                                                         })
                                                         ImageCropPicker.openPicker({
                                                             multiple: false,
-                                                            maxFiles: 1
+                                                            maxFiles: 1,
+                                                            mediaType: "photo",
                                                         }).then((response) => {
                                                             if (response.didCancel === true) {
                                                             }
@@ -402,6 +406,7 @@ class Profile extends Component {
                                                                                     type: this.state.profileImage.mime,
                                                                                 });
                                                                                 variables.profileImage = file
+                                                                             
                                                                             }
 
                                                                             if (newPassword !== "" || newPasswordAgain !== "") {
@@ -415,9 +420,7 @@ class Profile extends Component {
                                                                                         }
                                                                                         else {
                                                                                             variables.newPassword = md5(newPassword)
-                                                                                            this.setState({
-                                                                                                saveStatus: false
-                                                                                            })
+                                                                                          
                                                                                             await updateProfileData({
                                                                                                 variables: variables,
                                                                                             })
@@ -431,6 +434,9 @@ class Profile extends Component {
                                                                                 }
                                                                             }
                                                                             else {
+                                                                                this.setState({
+                                                                                    saveStatus: false
+                                                                                })
                                                                                 await updateProfileData({
                                                                                     variables: variables,
                                                                                 })

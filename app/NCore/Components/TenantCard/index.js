@@ -52,56 +52,74 @@ const TenantCard = ({ profileImageUrl, name, phoneNumber, activeApartment, suret
                     </View>
             }
             <View style={styles.descriptionContainer}>
-
-                {
-                    name && name !== "" ? <Text style={styles.thereIsNameText}>{name}</Text> :
-                        <Text style={styles.thereIsNoNameText}>Yok</Text>
-                }
-
-                <Text style={styles.thereIsDefault}>
-                    Telefon Numarası : {
-                        phoneNumber && phoneNumber !== "" ?
-                            <Text style={styles.phoneNumberDefault}>
-                                {phoneNumber}
-                            </Text> :
-                            <Text style={styles.thereIsNoDefault}>Yok</Text>
+                {/* Name */}
+                <View style={styles.descripitonSubContainer}>
+                    {
+                        name && name !== "" ? <Text style={styles.thereIsNameText}>{name}</Text> :
+                            <Text style={styles.thereIsNoNameText}>Yok</Text>
                     }
-                </Text>
+                </View>
 
-                <Text style={styles.thereIsDefault}>
-                    Aktif Daire : {
-                        activeApartment && activeApartment !== "" ?
-                            <Text style={[styles.contentDefault, { color: SuccessfulColor }]}>
-                                {activeApartment}
+                {/* Phone Number */}
+                <View style={styles.descripitonSubContainer}>
+                    <Text style={styles.thereIsDefault}>
+                        Telefon Numarası : {
+                            phoneNumber && phoneNumber !== "" ?
+                                <Text style={styles.phoneNumberDefault}>
+                                    {phoneNumber}
                             </Text> :
-                            <Text style={[styles.thereIsNoDefault, { color: UnsuccessfulColor }]}>Yok</Text>
-                    }
-                </Text>
+                                <Text style={styles.thereIsNoDefault}>Yok</Text>
+                        }
+                    </Text>
+                </View>
 
-                <Text style={styles.thereIsDefault}>
-                    Kefil : {
-                        surety && surety !== "" ?
-                            <Text style={[styles.contentDefault, { color: SuccessfulColor }]}>
-                                {surety}
-                            </Text> :
-                            <Text style={[styles.thereIsNoDefault, { color: UnsuccessfulColor }]}>Yok</Text>
-                    }
-                </Text>
+                {/* Active Real Estate */}
+                <View style={styles.descripitonSubContainer}>
+                    <Text style={styles.thereIsDefault}>
+                        Aktif Daire : {
+                            activeApartment && activeApartment !== "" ?
+                                <Text style={[styles.contentDefault, { color: SuccessfulColor }]}>
+                                    {activeApartment}
+                                </Text> :
+                                <Text style={[styles.thereIsNoDefault, { color: UnsuccessfulColor }]}>Yok</Text>
+                        }
+                    </Text>
+                </View>
 
-                <Text style={styles.thereIsDefault}>
-                    Kefil Telefon : {
-                        suretyPhoneNumber && suretyPhoneNumber !== "" ?
-                            <Text style={styles.phoneNumberDefault}>
-                                {suretyPhoneNumber}
-                            </Text> :
-                            <Text style={styles.thereIsNoDefault}>Yok</Text>
-                    }
-                </Text>
+                {/* Surety */}
+                <View style={styles.descripitonSubContainer}>
+                    <Text style={styles.thereIsDefault}>
+                        Kefil : {
+                            surety && surety !== "" ?
+                                <Text style={[styles.contentDefault, { color: SuccessfulColor }]}>
+                                    {surety}
+                                </Text> :
+                                <Text style={[styles.thereIsNoDefault, { color: UnsuccessfulColor }]}>Yok</Text>
+                        }
+                    </Text>
+                </View>
+
+                {/* Surety  Phone Number*/}
+                <View style={styles.descripitonSubContainer}>
+                    <Text style={styles.thereIsDefault}>
+                        Kefil Telefon : {
+                            suretyPhoneNumber && suretyPhoneNumber !== "" ?
+                                <Text style={styles.phoneNumberDefault}>
+                                    {suretyPhoneNumber}
+                                </Text> :
+                                <Text style={styles.thereIsNoDefault}>Yok</Text>
+                        }
+                    </Text>
+                </View>
             </View>
             <TouchableOpacity
                 onPress={() => onContractPress(
                     activeApartment !== "" ? true : false
                 )}
+                style={{
+                    width: 30,
+                    height: "100%",
+                }}
             >
                 <View style={{
                     width: 30,
@@ -144,25 +162,25 @@ const styles = StyleSheet.create({
         height: 75,
         resizeMode: "stretch"
     },
-    //Description Container 
+    //Description Container
     descriptionContainer: {
         flex: 1,
         padding: GeneralPadding / 2,
         flexDirection: "column",
-        alignContent: "space-between",
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+    },
+    descripitonSubContainer: {
+        width: "100%",
     },
     //Name
     thereIsNameText: {
         fontFamily: "Exo2.0-ExtraBold",
         color: "#272727",
-        flexWrap: "wrap"
 
     },
     thereIsNoNameText: {
         fontFamily: "Exo2.0-ExtraBold",
         color: "orange",
-        flexWrap: "wrap"
 
     },
     //Phone Number
@@ -170,13 +188,11 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontFamily: "Exo2.0-Bold",
         color: "#272727",
-        flexWrap: "wrap"
 
     },
     thereIsNoDefault: {
         fontFamily: "Exo2.0-Regular",
         color: UnsuccessfulColor,
-        flexWrap: "wrap",
         fontWeight: "900"
 
     },
@@ -185,14 +201,12 @@ const styles = StyleSheet.create({
         fontFamily: "Exo2.0-Regular",
         color: "blue",
         textDecorationLine: "underline",
-        flexWrap: "wrap"
 
     },
     // Content Default
     contentDefault: {
         fontFamily: "Exo2.0-Regular",
         color: "#272727",
-        flexWrap: "wrap",
         fontWeight: "900"
     },
 

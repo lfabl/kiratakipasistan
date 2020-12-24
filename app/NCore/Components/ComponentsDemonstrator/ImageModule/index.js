@@ -42,8 +42,10 @@ const ImageModule = ({ images, setImages, disabled }) => {
 
     useEffect(() => {
         setExistImages(images)
+        console.log("images",images)
     }, [images])
 
+    console.log(existImages)
 
     /* Functions */
     const handleRemoveItem = index => {
@@ -140,7 +142,9 @@ const ImageModule = ({ images, setImages, disabled }) => {
             onPressPhoneCamera={() => {
                 setModalVisible(false)
 
-                ImageCropPicker.openCamera({}).then((response) => {
+                ImageCropPicker.openCamera({
+                    mediaType : "photo",
+                }).then((response) => {
                     if (response.didCancel === true) {
                     }
                     else {
@@ -167,7 +171,8 @@ const ImageModule = ({ images, setImages, disabled }) => {
 
                 ImageCropPicker.openPicker({
                     multiple: true,
-                    maxFiles: (8 - existImages.length) > 0
+                    maxFiles: (8 - existImages.length) > 0,
+                    mediaType : "photo",
                 }).then((response) => {
                     if (response.didCancel === true) {
                     }
