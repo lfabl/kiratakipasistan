@@ -102,43 +102,43 @@ class CreateNewRealEstate extends Component {
         ]);
     }
     async fixtureDataConvert(args) {
-		return await new Promise(async (resolve, reject) => {
-			if (args.length !== 0) {
-				const newFixtureDatas = [];
-				for (let index = 0; index < args.length; index++) {
-					const element = args[index];
-					if (element.images.length !== 0) {
-						const newFixtureDatasImages = [];
-						for (let index = 0; index < element.images.length; index++) {
-							const fixTureDatas = element.images[index];
-							const newDatas = {};
-							newDatas.image = fixTureDatas.image;
-							if (typeof fixTureDatas['newImage'] !== 'undefined') {
-								newDatas.newImage = fixTureDatas.newImage;
-							}
-							newFixtureDatasImages.push(newDatas);
-							if (element.images.length - 1 === index) {
-								newFixtureDatas.push({
-									name: element.name,
-									images: newFixtureDatasImages
-								});
-							}
-						}
-					} else {
-						newFixtureDatas.push({
-							name: element.name,
-							images: []
-						});
-					}
-					if (args.length - 1 === index) {
-						resolve(newFixtureDatas);
-					}
-				}
-			} else {
-				resolve([]);
-			}
-		});
-	}
+        return await new Promise(async (resolve, reject) => {
+            if (args.length !== 0) {
+                const newFixtureDatas = [];
+                for (let index = 0; index < args.length; index++) {
+                    const element = args[index];
+                    if (element.images.length !== 0) {
+                        const newFixtureDatasImages = [];
+                        for (let index = 0; index < element.images.length; index++) {
+                            const fixTureDatas = element.images[index];
+                            const newDatas = {};
+                            newDatas.image = fixTureDatas.image;
+                            if (typeof fixTureDatas['newImage'] !== 'undefined') {
+                                newDatas.newImage = fixTureDatas.newImage;
+                            }
+                            newFixtureDatasImages.push(newDatas);
+                            if (element.images.length - 1 === index) {
+                                newFixtureDatas.push({
+                                    name: element.name,
+                                    images: newFixtureDatasImages
+                                });
+                            }
+                        }
+                    } else {
+                        newFixtureDatas.push({
+                            name: element.name,
+                            images: []
+                        });
+                    }
+                    if (args.length - 1 === index) {
+                        resolve(newFixtureDatas);
+                    }
+                }
+            } else {
+                resolve([]);
+            }
+        });
+    }
     render() {
         const {
             editMode, realEstateType, usageType, title, adress, rentalType,
@@ -461,12 +461,12 @@ class CreateNewRealEstate extends Component {
                                                     saveStatus: false
                                                 })
                                                 */
-                                               
+
                                                 const newFixtureData = await this.fixtureDataConvert(
                                                     this.state
                                                         .fixtureDatas
                                                 );
-                                                
+
 
                                                 createNewRealEstate({
                                                     variables: {
@@ -489,7 +489,7 @@ class CreateNewRealEstate extends Component {
                                                         detailAdditionalInformation: detailAdditionalInformation,
                                                         numberOfRoom: numberOfRoom,
                                                         purposeOfUsage: purposeOfUsage,
-                                                        detailRent: detailRent,
+                                                        detailRent: detailRent !== "" && detailRent.length !== 0 ? detailRent : "0",
                                                         paymentPeriod: {
                                                             type: this.state.paymentPeriodType,
                                                             date: this.state.paymentPeriodDate

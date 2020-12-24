@@ -560,7 +560,7 @@ class RealEstateInformation extends Component {
 																											detailAdditionalInformation: detailAdditionalInformation,
 																											numberOfRoom: numberOfRoom,
 																											purposeOfUsage: purposeOfUsage,
-																											detailRent: detailRent,
+																											detailRent: detailRent !== "" && detailRent.length !== 0 ? detailRent : "0",
 																											paymentPeriod: {
 																												type: this
 																													.state
