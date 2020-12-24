@@ -169,7 +169,15 @@ class TenantPortfolio extends Component {
                                 (deleteContract, { loading, error, data }) => {
                                     if (loading) {
                                         return (
-                                            <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
+                                            <View
+                                                style={{
+                                                    flex: 1,
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <ActivityIndicator size="large" style={{ flex: 1 }} color={"#1A2430"} />
+                                            </View>
                                         )
                                     }
                                     else if (error) {
