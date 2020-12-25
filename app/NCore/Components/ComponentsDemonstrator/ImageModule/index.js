@@ -15,6 +15,7 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Lightbox from 'react-native-lightbox';
 import { ReactNativeFile } from 'apollo-upload-client';
+import Toast from 'react-native-simple-toast';
 
 //NCore
 import TouchableHighlight from "../../TouchableHighlight";
@@ -190,7 +191,6 @@ const ImageModule = ({ images, setImages, disabled }) => {
                     maxFiles: (8 - existImages.length) > 0,
                     mediaType: "photo",
                 }).then(async (responses) => {
-                    console.log("girdi")
                     if (responses.didCancel === true) {
                     }
                     else {
@@ -219,6 +219,10 @@ const ImageModule = ({ images, setImages, disabled }) => {
                             }
                         }
 
+                    }
+                }).catch((err) => {
+                    if(err.toString().indexOf("Error: Invalid image selected") === 0){
+                        Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
                     }
                 });
 

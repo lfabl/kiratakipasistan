@@ -192,7 +192,10 @@ const AppSwitchNavigator = createSwitchNavigator(
         PastEstates: PastEstatesStack
     },
     {
-        initialRouteName: "Loading"
+        initialRouteName: "Loading",
+        resetOnBlur: false
+            
+
     }
 );
 

@@ -20,45 +20,89 @@ import {
 	home
 } from '../../../Server/graphql/Queries/home';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { withNavigationFocus } from 'react-navigation';
+
 class Home extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			pageIsFocused: "did"
+		};
+
 	}
+
 	handleBackButton = () => {
-		Alert.alert(
-			'Uygulamadan Çık',
-			'Uygulamadan çıkılsın mı?',
-			[
+		if (this.state.pageIsFocused === "did") {
+			Alert.alert(
+				'Uygulamadan Çık',
+				'Uygulamadan çıkılsın mı?',
+				[
+					{
+						text: 'İptal Et',
+						onPress: () => console.log('Cancel Pressed'),
+						style: 'cancel'
+					},
+					{
+						text: 'Tamam',
+						onPress: () => BackHandler.exitApp()
+					}
+				],
 				{
-					text: 'İptal Et',
-					onPress: () => console.log('Cancel Pressed'),
-					style: 'cancel'
-				},
-				{
-					text: 'Tamam',
-					onPress: () => BackHandler.exitApp()
+					cancelable: true
 				}
-			],
-			{
-				cancelable: true
-			}
-		);
-		return true;
+			);
+			return true;
+		}
+		else {
+
+		}
 	}
-	componentWillUnmount() {
-		BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-	}
+
 	async componentDidMount() {
-		BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+		BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
 		this.props.navigation.setParams({
 			pageName: 'Ana Sayfa'
 		});
+
 		const refetchPageName = this.props.navigation.getParam('refetchPageName');
 		if (typeof refetchPageName !== 'undefined' && refetchPageName !== '') {
-			this.props.navigation.navigate(refetchPageName);
+			this.setState({
+				pageIsFocused: "blur"
+			}, () => {
+				console.log("burada 2")
+				this.props.navigation.navigate(refetchPageName);
+			})
 		}
 	}
+
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (nextProps.isFocused !== this.props.isFocused && nextProps.isFocused) {
+			this.setState({
+				pageIsFocused: "focus"
+			}, () => {
+				setTimeout(() => {
+					if (this.state.pageIsFocused === "focus") {
+						this.setState({
+							pageIsFocused: "did"
+						}, () => {
+							BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
+						})
+					}
+
+				}, 300);
+			})
+		}
+		else if (nextProps.isFocused !== this.props.isFocused && !nextProps.isFocused) {
+			this.setState({
+				pageIsFocused: "blur"
+			}, () => {
+				BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+			})
+		}
+	}
+
+
 	render() {
 		const {
 			navigation
@@ -386,4 +430,4 @@ const styles = StyleSheet.create({
 		fontSize: 18
 	}
 });
-export default Home;
+export default withNavigationFocus(Home);

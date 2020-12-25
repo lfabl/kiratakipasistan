@@ -46,6 +46,7 @@ class CreateNewTenant extends Component {
             profileImageName: "",
             saveStatus: false
         };
+        this.goBack = this.goBack.bind(this)
     }
 
     componentDidMount() {
@@ -54,17 +55,26 @@ class CreateNewTenant extends Component {
             goBackFunction: () => this.props.navigation.navigate("TenantPortfolio")
         })
     }
-    UNSAFE_componentWillMount() {
-        BackHandler.addEventListener("hardwareBackPress", async () => {
-            await this.props.navigation.setParams({
-                refetchPageName: ""
-            })
-            this.props.navigation.navigate("Home", {
-                refetchPageName: "TenantPortfolio"
-            })
-            return false
-        })
+
+    goBack() {
+        console.log("girdi222")
+        this.props.navigation.navigate("RealEstatePortfolio");
     }
+
+    UNSAFE_componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', async () => {
+            await this.props.navigation.setParams({
+                refetchPageName: ''
+            });
+            this.props.navigation.navigate('Home', {
+                refetchPageName: 'TenantPortfolio'
+            });
+            return false;
+        });
+    }
+
+
+
     async toastMessage({ data }) {
         const message = await data.newTenant.message;
         const title = "Kiracı";

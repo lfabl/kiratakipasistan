@@ -8,6 +8,7 @@ import {
     UIManager,
     Dimensions,
     ActivityIndicator,
+    BackHandler,
     TouchableOpacity
 } from "react-native";
 import Toast from "react-native-simple-toast";
@@ -76,6 +77,12 @@ class Profile extends Component {
         this.changeEditMode = this.changeEditMode.bind(this);
     }
     componentDidMount() {
+        /*
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            this.props.navigation.goBack();
+        });
+
+        */
         this.props.navigation.setParams({
             pageName: "Profil"
         })

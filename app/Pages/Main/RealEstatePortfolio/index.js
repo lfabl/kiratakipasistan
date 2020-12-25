@@ -4,8 +4,10 @@ import {
     StyleSheet,
     ScrollView,
     FlatList,
+    BackHandler,
     ActivityIndicator
 } from "react-native";
+import { withNavigationFocus } from 'react-navigation';
 
 import Toast from "react-native-simple-toast";
 
@@ -14,7 +16,6 @@ import { Query, Mutation } from "react-apollo";
 import { getAllRealEstates } from "../../../Server/graphql/Queries/getAllRealEstates";
 import { newContract } from "../../../Server/graphql/Mutation/newContract";
 import { deleteContract } from "../../../Server/graphql/Mutation/deleteContract";
-
 //FontAwesome Icon
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -64,6 +65,7 @@ class RealEstateProtfolio extends Component {
     }
 
     componentDidMount() {
+    
         this.props.navigation.setParams({ pageName: "Emlak Portfoyüm" });
     }
 
@@ -384,4 +386,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RealEstateProtfolio;
+export default withNavigationFocus(RealEstateProtfolio);

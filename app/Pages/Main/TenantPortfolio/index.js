@@ -35,6 +35,7 @@ import {
 } from "../../../NCore";
 
 import { typeValidMessageConverter } from "../../../NCore/Tools/typeValidMessageConverter";
+import { withNavigationFocus } from 'react-navigation';
 
 class TenantPortfolio extends Component {
     constructor(props) {
@@ -60,15 +61,9 @@ class TenantPortfolio extends Component {
     }
 
     componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.navigate("Home", {
-                backPopUpVisible: false
-            })
-            BackHandler.removeEventListener('hardwareBackPress');
-        });
         this.props.navigation.setParams({ pageName: "Kiracı Portfoyüm" });
-
     }
+
     async toastMessage({ data }) {
         const message = await data.newContract.message;
         const title = "Sözleşme";
@@ -384,4 +379,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default TenantPortfolio;
+export default withNavigationFocus(TenantPortfolio);
