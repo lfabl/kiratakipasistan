@@ -22,7 +22,7 @@ import Modal from "../../Modal";
 import ImagePicker from "../../ImagePicker";
 import { launchCamera } from 'react-native-image-picker';
 import RNFetchBlob from 'rn-fetch-blob';
-
+import { fileTypeController } from "../../../Tools/fileTypeController";
 
 const width = Dimensions.get("screen").width;
 const height = Dimensions.get("screen").height;
@@ -189,10 +189,14 @@ const ImageModule = ({ images, setImages, disabled }) => {
                     multiple: true,
                     maxFiles: (8 - existImages.length) > 0,
                     mediaType: "photo",
-                }).then(async (response) => {
-                    if (response.didCancel === true) {
+                }).then(async (responses) => {
+                    console.log("girdi")
+                    if (responses.didCancel === true) {
                     }
                     else {
+                        const result = await fileTypeController(responses, "mime");
+                        const response = result.response;
+
                         const _existImages = existImages;
                         for (let index = 0; index < response.length; index++) {
                             if (8 - _existImages.length > 0) {
@@ -214,7 +218,7 @@ const ImageModule = ({ images, setImages, disabled }) => {
                                 setExistImages(_existImages);
                             }
                         }
-                      
+
                     }
                 });
 
