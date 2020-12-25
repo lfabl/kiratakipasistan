@@ -20,6 +20,8 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import TouchableHighlight from "../../TouchableHighlight";
 import Modal from "../../Modal";
 import ImagePicker from "../../ImagePicker";
+import { launchCamera } from 'react-native-image-picker';
+import RNFetchBlob from 'rn-fetch-blob';
 
 
 const width = Dimensions.get("screen").width;
@@ -42,11 +44,9 @@ const ImageModule = ({ images, setImages, disabled }) => {
 
     useEffect(() => {
         setExistImages(images)
-        console.log("images",images)
     }, [images])
 
     console.log(existImages)
-
     /* Functions */
     const handleRemoveItem = index => {
         // assigning the list to temp variable
@@ -139,47 +139,64 @@ const ImageModule = ({ images, setImages, disabled }) => {
                 setModalVisible(val)
 
             }}
-            onPressPhoneCamera={() => {
+            onPressPhoneCamera={async () => {
                 setModalVisible(false)
-
-                ImageCropPicker.openCamera({
-                    mediaType : "photo",
-                }).then((response) => {
+                launchCamera({
+                    mediaType: "photo",
+                    saveToPhotos: true,
+                    storageOptions: {
+                        skipBackup: true,
+                        path: 'tmp_files'
+                    },
+                    includeBase64: true
+                }, async (response) => {
                     if (response.didCancel === true) {
                     }
                     else {
-                        let _existImages = JSON.parse(JSON.stringify(existImages));
+                        console.log(response)
+                        const base64 = response.base64;
 
-                        const pathArray = response.path.toString().split("/");
-                        const name = pathArray[pathArray.length - 1];
-                        const file = new ReactNativeFile({
-                            uri: response.path,
-                            name: name,
-                            type: response.mime
-                        });
-                        _existImages.push({
-                            newImage: file
+                        const path = `${RNFetchBlob.fs.dirs.DCIMDir}/${response.fileName}`;
+                        console.log(path)
+                        try {
+                            const data = await RNFetchBlob.fs.writeFile(path, base64, 'base64');
+                            console.log(data, 'data');
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+
+                        const newImages = existImages;
+
+                        newImages.push({
+
+                            newImage: new ReactNativeFile({
+                                uri: "file:///" + path,
+                                name: response.fileName,
+                                type: response.type
+                            })
                         });
 
-                        setImages(_existImages);
-                        setExistImages(_existImages);
+                        setImages(newImages);
+                        setExistImages(newImages);
+
                     }
-                });
+                })
             }}
-            onPressGalery={() => {
+            onPressGalery={async () => {
                 setModalVisible(false)
 
                 ImageCropPicker.openPicker({
                     multiple: true,
                     maxFiles: (8 - existImages.length) > 0,
-                    mediaType : "photo",
-                }).then((response) => {
+                    mediaType: "photo",
+                }).then(async (response) => {
                     if (response.didCancel === true) {
                     }
                     else {
-                        let _existImages = JSON.parse(JSON.stringify(existImages));
-                        response.forEach(m => {
+                        const _existImages = existImages;
+                        for (let index = 0; index < response.length; index++) {
                             if (8 - _existImages.length > 0) {
+                                const m = response[index];
                                 const pathArray = m.path.toString().split("/");
                                 const name = pathArray[pathArray.length - 1];
                                 const file = new ReactNativeFile({
@@ -191,9 +208,13 @@ const ImageModule = ({ images, setImages, disabled }) => {
                                     newImage: file
                                 });
                             }
-                        });
-                        setImages(_existImages);
-                        setExistImages(_existImages);
+
+                            if (index + 1 === response.length) {
+                                setImages(_existImages);
+                                setExistImages(_existImages);
+                            }
+                        }
+                      
                     }
                 });
 
