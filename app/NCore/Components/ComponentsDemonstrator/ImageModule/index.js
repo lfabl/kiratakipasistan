@@ -21,8 +21,6 @@ import Toast from 'react-native-simple-toast';
 import TouchableHighlight from "../../TouchableHighlight";
 import Modal from "../../Modal";
 import ImagePicker from "../../ImagePicker";
-import { launchCamera } from 'react-native-image-picker';
-import RNFetchBlob from 'rn-fetch-blob';
 import { fileTypeController } from "../../../Tools/fileTypeController";
 
 const width = Dimensions.get("screen").width;
@@ -142,6 +140,33 @@ const ImageModule = ({ images, setImages, disabled }) => {
             }}
             onPressPhoneCamera={async () => {
                 setModalVisible(false)
+                ImageCropPicker.openCamera({
+                    mediaType: "photo",
+                }).then(async (response) => {
+                    if (response.didCancel === true) {
+                    }
+                    else {
+                        const _existImages = existImages;
+                        const pathArray = response.path.toString().split("/");
+                        const name = pathArray[pathArray.length - 1];
+                        const file = new ReactNativeFile({
+                            uri: response.path,
+                            name: name,
+                            type: response.mime
+                        });
+                        _existImages.push({
+                            newImage: file
+                        });
+                        setImages(_existImages);
+                        setExistImages(_existImages);
+
+                    }
+                }).catch((err) => {
+                    if (err.toString().indexOf("Error: Invalid image selected") === 0) {
+                        Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
+                    }
+                });
+
                 launchCamera({
                     mediaType: "photo",
                     saveToPhotos: true,
@@ -221,7 +246,7 @@ const ImageModule = ({ images, setImages, disabled }) => {
 
                     }
                 }).catch((err) => {
-                    if(err.toString().indexOf("Error: Invalid image selected") === 0){
+                    if (err.toString().indexOf("Error: Invalid image selected") === 0) {
                         Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
                     }
                 });
