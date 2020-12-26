@@ -1,4 +1,4 @@
-export const serverAdres = "http://192.168.2.233:4010";
+export const serverAdres = "http://192.168.1.252:4010";
 //"http://192.168.1.252:4010";
 //"http://192.168.2.101:4010";
 
