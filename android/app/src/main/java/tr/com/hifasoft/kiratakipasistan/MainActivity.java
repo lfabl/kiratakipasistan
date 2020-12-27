@@ -1,4 +1,4 @@
-package com.kiratakipasistan;
+package tr.com.hifasoft.kiratakipasistan;
 
 import com.facebook.react.ReactActivity;
 
