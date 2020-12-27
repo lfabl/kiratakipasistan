@@ -1010,7 +1010,7 @@ class RealEstateInformation extends Component {
 																					})}
 																				disabled={!editMode}
 																			/>
-																			<Text>Her periyodun tamamlanmasına 15 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
+																			<Text>Her periyodun tamamlanmasına 3 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
 																		</DescriptionCard>
 
 																		{

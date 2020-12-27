@@ -4,6 +4,7 @@ import {
     Alert,
     Dimensions,
     ScrollView,
+    Platform,
     ImageBackground,
     TouchableOpacity,
     PermissionsAndroid,
@@ -31,15 +32,6 @@ const ImageModule = ({ images, setImages, disabled }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
     const [lightBoxOpen, setLightBoxOpen] = useState(false);
-
-
-    /* LifeCycle Hooks */
-    useEffect(() => {
-        PermissionsAndroid.requestMultiple([
-            'android.permission.CAMERA',
-            'android.permission.WRITE_EXTERNAL_STORAGE'
-        ])
-    });
 
     useEffect(() => {
         setExistImages(images)
@@ -135,8 +127,13 @@ const ImageModule = ({ images, setImages, disabled }) => {
         <ImagePicker
             visible={modalVisible}
             setVisible={(val) => {
+                if(val && Platform.OS === "android") {
+                    PermissionsAndroid.requestMultiple([
+                        'android.permission.CAMERA',
+                        'android.permission.WRITE_EXTERNAL_STORAGE'
+                    ])
+                }
                 setModalVisible(val)
-
             }}
             onPressPhoneCamera={async () => {
                 setModalVisible(false)

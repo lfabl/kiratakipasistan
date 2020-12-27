@@ -48,7 +48,7 @@ class CreateNewRealEstate extends Component {
         super(props);
         this.state = {
             saveStatus: false,
-            realEstateType: "store",
+            realEstateType: "apartment",
             usageType: "null",
             fixtureDatas: [],
             title: "",
@@ -441,7 +441,7 @@ class CreateNewRealEstate extends Component {
                                                 })}
                                                 value={this.state.paymentPeriodDate}
                                             />
-                                            <Text>Her periyodun tamamlanmasına 15 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
+                                            <Text>Her periyodun tamamlanmasına 3 gün kala size hatırlatma bildirimi gönderilecektir.</Text>
                                         </DescriptionCard>
                                         {
                                             realEstateType !== "other" ?
