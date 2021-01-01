@@ -2,11 +2,11 @@ import React, { Component, useContext } from "react";
 import {
     View,
     StyleSheet,
+    Platform,
     LayoutAnimation,
     UIManager,
     TouchableOpacity,
-    Keyboard,
-    Button
+    Keyboard
 } from "react-native";
 
 import md5 from "md5";
@@ -55,7 +55,7 @@ class Signin extends Component {
                 password: md5Password
             });
             if (password.length < 5 || password.length > 80) {
-                UIManager.setLayoutAnimationEnabledExperimental(true)
+                if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                 this.setState({
                     errorMessage: "Gönderdiğiniz şifre gerekli kuralları sağlamıyor. Lütfen minimum 5 maximum 80 karakter girin!"
@@ -81,7 +81,7 @@ class Signin extends Component {
             }
         }
         else {
-            UIManager.setLayoutAnimationEnabledExperimental(true)
+            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState({
                 errorMessage: "Lütfen kullanıcı adı ve şifrenizi eksiksiz giriniz"
@@ -96,7 +96,7 @@ class Signin extends Component {
                         placeholder={"Kullanıcı adı"}
                         value={this.state.userName}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ userName: val, errorMessage: "" })
                         }}
@@ -112,7 +112,7 @@ class Signin extends Component {
                         value={this.state.password}
                         isPassword={true}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ password: val, errorMessage: "" })
                         }}

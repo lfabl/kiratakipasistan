@@ -6,6 +6,7 @@ import {
 	ActivityIndicator,
 	LayoutAnimation,
 	UIManager,
+	Platform,
 	BackHandler,
 	Alert,
 	TouchableOpacity
@@ -116,7 +117,7 @@ class RealEstateInformation extends Component {
 
 	changeEditMode(revertTempStatus) {
 		const { editMode } = this.state;
-		UIManager.setLayoutAnimationEnabledExperimental(true);
+		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 
 		/* Edit Mode Control */

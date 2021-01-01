@@ -267,6 +267,10 @@ const SwipeableTopTabBar = (props) => {
 };
 
 const styles = StyleSheet.create({
+	container: {
+		zIndex: 9999,
+		backgroundColor: "white"
+	},
 	defaultCompanentSize: {
 		width: Dimensions.get('screen').width * 1.25,
 		height: Dimensions.get('screen').width * 1.25,

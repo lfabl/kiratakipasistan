@@ -7,6 +7,7 @@ import {
 	UIManager,
 	ActivityIndicator,
 	TouchableOpacity,
+	Platform,
 	BackHandler,
 	Alert
 } from 'react-native';
@@ -88,7 +89,7 @@ class TentantInformation extends Component {
 	}
 
 	componentDidMount() {
-		UIManager.setLayoutAnimationEnabledExperimental(true);
+		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 		this.props.navigation.setParams({
 			pageName: 'Kiracı Bilgileri',
@@ -109,7 +110,7 @@ class TentantInformation extends Component {
 
 	changeEditMode(revertTempStatus) {
 		const { profileEditMode } = this.state;
-		UIManager.setLayoutAnimationEnabledExperimental(true);
+		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 
 		/* Edit Mode Control */
@@ -328,6 +329,52 @@ class TentantInformation extends Component {
 																				modalVisible: val
 																			})
 																		}}
+																		onModalHide={async(prop)=>{
+																			setTimeout(() => {
+																				if(prop === "phoneCamera"){																					
+																					ImageCropPicker.openCamera({
+																						multiple: false,
+																						maxFiles: 1,
+																						mediaType: "photo",
+		
+																					}).then((response) => {
+																						if (response.didCancel === true) {
+																						}
+																						else {
+																							this.setState({
+																								saveStatus: true
+																							})
+																							this.setState({
+																								deleteProfileImage: false,
+																								profileImageName: response.path,
+																								profileImage: response
+																							});
+																						}
+																					})
+																				}
+																				else if(prop === "gallery"){
+																					ImageCropPicker.openPicker({
+																						multiple: false,
+																						maxFiles: 1,
+																						mediaType: "photo",
+		
+																					}).then((response) => {
+																						if (response.didCancel === true) {
+																						}
+																						else {
+																							this.setState({
+																								saveStatus: true
+																							})
+																							this.setState({
+																								deleteProfileImage: false,
+																								profileImageName: response.path,
+																								profileImage: response
+																							});
+																						}
+																					});
+																				}
+																			}, 400);
+																		}}
 																		onPressPhoneCamera={() => {
 																			this.setState({
 																				modalVisible: false
@@ -429,43 +476,6 @@ class TentantInformation extends Component {
 																					styles.headerContainer
 																				]}
 																			>
-																				<ProfileImage
-																					src={
-																						this.state
-																							.profileImage !==
-																							null ? (
-																								this.state
-																									.profileImageName
-																							) : this.state
-																								.profileImageName !==
-																								'' ? (
-																									serverAdres +
-																									'/profileImages/' +
-																									this.state
-																										.profileImageName
-																								) : (
-																									this.state
-																										.profileImageName
-																								)
-																					}
-																					style={
-																						(Shadow,
-																							{ flex: 1 })
-																					}
-																					size={
-																						ProfileImageSize
-																					}
-																					profileEditMode={this.state.profileEditMode}
-																					onEditLongPress={() => {
-
-																					}}
-																					editOnPress={async () => {
-																						this.setState({
-																							modalVisible: true
-																						})
-																					}}
-																				/>
-
 																				<View
 																					style={[
 																						styles.headerControler,
@@ -606,6 +616,42 @@ class TentantInformation extends Component {
 																						</TouchableOpacity>
 																					)}
 																				</View>
+																				<ProfileImage
+																					src={
+																						this.state
+																							.profileImage !==
+																							null ? (
+																								this.state
+																									.profileImageName
+																							) : this.state
+																								.profileImageName !==
+																								'' ? (
+																									serverAdres +
+																									'/profileImages/' +
+																									this.state
+																										.profileImageName
+																								) : (
+																									this.state
+																										.profileImageName
+																								)
+																					}
+																					style={
+																						(Shadow,
+																							{ flex: 1 })
+																					}
+																					size={
+																						ProfileImageSize
+																					}
+																					profileEditMode={this.state.profileEditMode}
+																					onEditLongPress={() => {
+
+																					}}
+																					editOnPress={async () => {
+																						this.setState({
+																							modalVisible: true
+																						})
+																					}}
+																				/>
 																			</View>
 
 																			<DescriptionCard

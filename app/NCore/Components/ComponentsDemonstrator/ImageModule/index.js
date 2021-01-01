@@ -135,120 +135,83 @@ const ImageModule = ({ images, setImages, disabled }) => {
                 }
                 setModalVisible(val)
             }}
-            onPressPhoneCamera={async () => {
-                setModalVisible(false)
-                ImageCropPicker.openCamera({
-                    mediaType: "photo",
-                }).then(async (response) => {
-                    if (response.didCancel === true) {
-                    }
-                    else {
-                        const _existImages = existImages;
-                        const pathArray = response.path.toString().split("/");
-                        const name = pathArray[pathArray.length - 1];
-                        const file = new ReactNativeFile({
-                            uri: response.path,
-                            name: name,
-                            type: response.mime
-                        });
-                        _existImages.push({
-                            newImage: file
-                        });
-                        setImages(_existImages);
-                        setExistImages(_existImages);
-
-                    }
-                }).catch((err) => {
-                    if (err.toString().indexOf("Error: Invalid image selected") === 0) {
-                        Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
-                    }
-                });
-
-                launchCamera({
-                    mediaType: "photo",
-                    saveToPhotos: true,
-                    storageOptions: {
-                        skipBackup: true,
-                        path: 'tmp_files'
-                    },
-                    includeBase64: true
-                }, async (response) => {
-                    if (response.didCancel === true) {
-                    }
-                    else {
-                        console.log(response)
-                        const base64 = response.base64;
-
-                        const path = `${RNFetchBlob.fs.dirs.DCIMDir}/${response.fileName}`;
-                        console.log(path)
-                        try {
-                            const data = await RNFetchBlob.fs.writeFile(path, base64, 'base64');
-                            console.log(data, 'data');
-                        } catch (error) {
-                            console.log(error.message);
-                        }
-
-                        const newImages = existImages;
-
-                        newImages.push({
-
-                            newImage: new ReactNativeFile({
-                                uri: "file:///" + path,
-                                name: response.fileName,
-                                type: response.type
-                            })
-                        });
-
-                        setImages(newImages);
-                        setExistImages(newImages);
-
-                    }
-                })
-            }}
-            onPressGalery={async () => {
-                setModalVisible(false)
-
-                ImageCropPicker.openPicker({
-                    multiple: true,
-                    maxFiles: (8 - existImages.length) > 0,
-                    mediaType: "photo",
-                }).then(async (responses) => {
-                    if (responses.didCancel === true) {
-                    }
-                    else {
-                        const result = await fileTypeController(responses, "mime");
-                        const response = result.response;
-
-                        const _existImages = existImages;
-                        for (let index = 0; index < response.length; index++) {
-                            if (8 - _existImages.length > 0) {
-                                const m = response[index];
-                                const pathArray = m.path.toString().split("/");
+            onModalHide={async(prop)=>{
+                setTimeout(() => {
+                    if(prop === "phoneCamera"){
+                        ImageCropPicker.openCamera({
+                            mediaType: "photo",
+                        }).then(async (response) => {
+                            if (response.didCancel === true) {
+                            }
+                            else {
+                                const _existImages = existImages;
+                                const pathArray = response.path.toString().split("/");
                                 const name = pathArray[pathArray.length - 1];
                                 const file = new ReactNativeFile({
-                                    uri: m.path,
+                                    uri: response.path,
                                     name: name,
-                                    type: m.mime
+                                    type: response.mime
                                 });
                                 _existImages.push({
                                     newImage: file
                                 });
-                            }
-
-                            if (index + 1 === response.length) {
                                 setImages(_existImages);
                                 setExistImages(_existImages);
+        
                             }
-                        }
-
+                        }).catch((err) => {
+                            console.warn(err.message);
+                            if (err.toString().indexOf("Error: Invalid image selected") === 0) {
+                                Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
+                            }
+                        });
                     }
-                }).catch((err) => {
-                    if (err.toString().indexOf("Error: Invalid image selected") === 0) {
-                        Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
+                    else if(prop === "gallery"){
+                        ImageCropPicker.openPicker({
+                            multiple: true,
+                            maxFiles: 8,
+                            mediaType: "photo",
+                        }).then(async (responses) => {
+                            console.warn(responses)
+                            if (responses.didCancel === true) {
+                            }
+                            else {
+                                const result = await fileTypeController(responses, "mime");
+                                const response = result.response;
+        
+                                const _existImages = existImages;
+                                for (let index = 0; index < response.length; index++) {
+                                    if (8 - _existImages.length > 0) {
+                                        const m = response[index];
+                                        const pathArray = m.path.toString().split("/");
+                                        const name = pathArray[pathArray.length - 1];
+                                        const file = new ReactNativeFile({
+                                            uri: m.path,
+                                            name: name,
+                                            type: m.mime
+                                        });
+                                        _existImages.push({
+                                            newImage: file
+                                        });
+                                    }
+        
+                                    if (index + 1 === response.length) {
+                                        setImages(_existImages);
+                                        setExistImages(_existImages);
+                                    }
+                                }
+        
+                            }
+                        }).catch((err) => {
+                            console.warn(err.message)
+                            if (err.toString().indexOf("Error: Invalid image selected") === 0) {
+                                Toast.show("Lütfen sadece jpg ve png formatında resimler seçiniz.", Toast.LONG, ['UIAlertController']);
+                            }
+                        });
                     }
-                });
-
+                }, 400);
             }}
+            
         >
 
         </ImagePicker>

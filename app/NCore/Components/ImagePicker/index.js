@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useState}from "react";
 import {
     View,
     Text,
@@ -8,10 +8,12 @@ import {
 
 import Modal from "react-native-modal";
 
-const ImagePicker = ({ visible, setVisible, onPressPhoneCamera, onPressGalery, onPressDelete }) => {
+const ImagePicker = ({ visible, setVisible ,onModalHide, onPressDelete}) => {
+    const [modalHideProps,setModalHideProps] =  useState("")
     return <Modal
         isVisible={visible}
         onBackdropPress={() => setVisible(false)}
+        onModalHide={()=> onModalHide(modalHideProps)}
     >
         <View style={styles.container}>
             {/* Title */}
@@ -22,7 +24,10 @@ const ImagePicker = ({ visible, setVisible, onPressPhoneCamera, onPressGalery, o
             </TouchableOpacity>
 
             {/* Phone Camera */}
-            <TouchableOpacity style={styles.itemContainer} onPress={() => onPressPhoneCamera()}>
+            <TouchableOpacity style={styles.itemContainer} onPress={() => {
+                setVisible(false);
+                setModalHideProps("phoneCamera")
+            }}>
                 <Text style={styles.subTitle}>
                     Telefon Kamerası
                 </Text>
@@ -30,7 +35,10 @@ const ImagePicker = ({ visible, setVisible, onPressPhoneCamera, onPressGalery, o
 
 
             {/* Galery */}
-            <TouchableOpacity style={styles.itemContainer} onPress={() => onPressGalery()}>
+            <TouchableOpacity style={styles.itemContainer} onPress={() => {
+                setVisible(false);
+                setModalHideProps("gallery")
+            }}>
                 <Text style={styles.subTitle}>
                     Kütüphaneden Seçin
                 </Text>

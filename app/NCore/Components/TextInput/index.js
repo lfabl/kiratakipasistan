@@ -67,7 +67,7 @@ const TextInput = ({ style, containerStyle, value, onChangeText, placeholder, in
                     {
                         editable === false && isPhoneNumber ? <TouchableOpacity
                             onPress={() => {
-                                UIManager.setLayoutAnimationEnabledExperimental(false)
+                                if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(false)
                                 makeCall()
                             }
                             }

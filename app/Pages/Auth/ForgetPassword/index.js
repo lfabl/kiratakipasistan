@@ -3,6 +3,7 @@ import {
     View,
     StyleSheet,
     UIManager,
+    Platform,
     LayoutAnimation,
     Text
 } from "react-native";
@@ -42,7 +43,7 @@ class ForgetPassword extends Component {
     async forgetPassword() {
         const { mail } = this.state;
         if (mail === "") {
-            UIManager.setLayoutAnimationEnabledExperimental(true)
+            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState({
                 errorMessage: "Lütfen bir mail giriniz."
@@ -59,7 +60,7 @@ class ForgetPassword extends Component {
                 })
             }
             else {
-                UIManager.setLayoutAnimationEnabledExperimental(true)
+                if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                 this.setState({
                     errorMessage: forgetPasswordResult.message,

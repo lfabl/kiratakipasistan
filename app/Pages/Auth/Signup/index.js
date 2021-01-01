@@ -4,6 +4,7 @@ import {
     StyleSheet,
     UIManager,
     LayoutAnimation,
+    Platform,
     Keyboard
 } from "react-native";
 import md5 from "md5";
@@ -48,13 +49,13 @@ class Signup extends Component {
         const { userName, password, officeName, mail } = this.state;
 
         if (userName === "" || password === "" || officeName === "" || mail === "") {
-            UIManager.setLayoutAnimationEnabledExperimental(true)
+            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState({
                 errorMessage: "Lütfen istenilen her bilgiyi doldurduğunuzdan emin olunuz."
             })
         } else if (password.length < 5 || password.length > 80) {
-            UIManager.setLayoutAnimationEnabledExperimental(true)
+            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             this.setState({
                 errorMessage: "Gönderdiğiniz şifre gerekli kuralları sağlamıyor. Lütfen minimum 5 maximum 80 karakter girin!"
@@ -73,7 +74,7 @@ class Signup extends Component {
                 this.props.navigation.navigate("Loading")
             }
             else {
-                UIManager.setLayoutAnimationEnabledExperimental(true)
+                if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                 if (signupResult.message.indexOf("userName") !== -1) {
                     this.setState({
@@ -112,7 +113,7 @@ class Signup extends Component {
                         placeholder={"Mail"}
                         value={this.state.mail}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ mail: val, errorMessage: "" })
                         }}
@@ -127,7 +128,7 @@ class Signup extends Component {
                         placeholder={"Ofis Adı"}
                         value={this.state.officeName}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ officeName: val, errorMessage: "" })
                         }}
@@ -144,7 +145,7 @@ class Signup extends Component {
                         placeholder={"Kullanıcı Adı"}
                         value={this.state.userName}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ userName: val, errorMessage: "" })
                         }}
@@ -161,7 +162,7 @@ class Signup extends Component {
                         value={this.state.password}
                         isPassword={true}
                         onChangeText={(val) => {
-                            UIManager.setLayoutAnimationEnabledExperimental(true)
+                            if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                             this.setState({ password: val, errorMessage: "" })
                         }}

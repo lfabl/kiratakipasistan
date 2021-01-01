@@ -194,8 +194,6 @@ const AppSwitchNavigator = createSwitchNavigator(
     {
         initialRouteName: "Loading",
         resetOnBlur: false
-            
-
     }
 );
 

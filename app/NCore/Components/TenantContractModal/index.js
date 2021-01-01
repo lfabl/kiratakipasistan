@@ -5,6 +5,7 @@ import {
     ScrollView,
     LayoutAnimation,
     UIManager,
+    Platform,
     Text
 } from "react-native";
 
@@ -155,7 +156,7 @@ const TenantContractModal = ({ contractModalVisible, onChangeContractModalVisibl
                                                             types={tenantTypes === 0 ? [] : tenantTypes}
                                                             defaultSelectTypeKey={selectID}
                                                             onSelectType={(type) => {
-                                                                UIManager.setLayoutAnimationEnabledExperimental(true)
+                                                                if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                                                                 LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
                                                                 setselectID(type)
                                                             }}

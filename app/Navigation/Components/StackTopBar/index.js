@@ -108,6 +108,9 @@ const StackTopBar = (props) => {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: "white"
+    },
     defaultCompanentSize: {
         width: Dimensions.get("screen").width * 1.25,
         minHeight: Dimensions.get("screen").width * 1.25,

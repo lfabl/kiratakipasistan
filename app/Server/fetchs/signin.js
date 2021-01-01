@@ -1,7 +1,7 @@
 import { serverAdres } from "../config";
 
 const signin = async (params) => {
-    const fectAdress = serverAdres + "/auth/signin"
+    const fectAdress = serverAdres + "/auth/signin";
     return await fetch(fectAdress, {
         method: "POST",
         headers: {
@@ -13,4 +13,4 @@ const signin = async (params) => {
         .catch((err) => err)
 }
 
-export default signin
+export default signin;

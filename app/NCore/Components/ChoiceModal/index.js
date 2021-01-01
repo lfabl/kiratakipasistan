@@ -92,14 +92,14 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
     },
     canel: {
-        fontFamily: "Exo2.0",
+        fontFamily: "Exo2.0-Regular",
         fontWeight: "600",
         alignSelf: "flex-end",
         color: "rgba(39, 39, 39, 0.7)",
         margin: GeneralPadding / 4
     },
     submit: {
-        fontFamily: "Exo2.0",
+        fontFamily: "Exo2.0-Regular",
         fontWeight: "600",
         alignSelf: "flex-end",
         color: "#30D5C8",

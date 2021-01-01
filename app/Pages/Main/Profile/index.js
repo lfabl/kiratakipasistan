@@ -7,6 +7,7 @@ import {
     LayoutAnimation,
     UIManager,
     Dimensions,
+    Platform,
     ActivityIndicator,
     BackHandler,
     TouchableOpacity
@@ -90,7 +91,7 @@ class Profile extends Component {
 
     changeEditMode(revertTempStatus) {
         const { profileEditMode } = this.state;
-        UIManager.setLayoutAnimationEnabledExperimental(true);
+        if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
         LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 
         /* Edit Mode Control */
@@ -268,6 +269,43 @@ class Profile extends Component {
                                                             modalVisible: val
                                                         })
                                                     }}
+                                                    onModalHide={async(prop)=>{
+                                                        setTimeout(() => {
+                                                            if(prop === "phoneCamera"){
+                                                                ImageCropPicker.openCamera({
+                                                                    mediaType: "photo",
+                                                                }).then((response) => {
+                                                                    if (response.didCancel === true) {
+                                                                    }
+                                                                    else {
+                                                                        this.setState({
+                                                                            deleteProfileImage: false,
+                                                                            profileImageName: response.path,
+                                                                            profileImage: response
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }
+                                                            else if(prop === "gallery"){
+                                                                ImageCropPicker.openPicker({
+                                                                    multiple: false,
+                                                                    maxFiles: 1,
+                                                                    mediaType: "photo",
+                                                                }).then((response) => {
+                                                                    if (response.didCancel === true) {
+                                                                    }
+                                                                    else {
+        
+                                                                        this.setState({
+                                                                            deleteProfileImage: false,
+                                                                            profileImageName: response.path,
+                                                                            profileImage: response
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }
+                                                        }, 400);
+                                                    }}
                                                     onPressPhoneCamera={() => {
                                                         this.setState({
                                                             modalVisible: false
@@ -348,24 +386,6 @@ class Profile extends Component {
                                                 >
                                                     <View style={[Shadow, styles.profileContainer]}>
                                                         <View style={[styles.headerContainer, Shadow]}>
-
-                                                            <ProfileImage
-                                                                src={
-                                                                    this.state.profileImage !== null ? this.state.profileImageName :
-                                                                        this.state.profileImageName !== "" ? serverAdres + "/profileImages/" + this.state.profileImageName : this.state.profileImageName
-                                                                }
-                                                                style={Shadow, { flex: 1, }}
-                                                                size={ProfileImageSize}
-                                                                profileEditMode={this.state.profileEditMode}
-                                                                onEditLongPress={() => {
-                                                                }}
-                                                                editOnPress={async () => {
-                                                                    this.setState({
-                                                                        modalVisible: true
-                                                                    })
-                                                                }}
-                                                            />
-
                                                             <View
                                                                 style={[
                                                                     styles.headerControler,
@@ -373,7 +393,7 @@ class Profile extends Component {
                                                                         position: "absolute",
                                                                         top: ProfileImageSize / 2,
                                                                         paddingHorizontal: 10,
-                                                                        paddingTop: 5
+                                                                        paddingTop: 5                                                                        
                                                                     }
                                                                 ]}
                                                             >
@@ -465,6 +485,22 @@ class Profile extends Component {
                                                                     </TouchableOpacity>
                                                                 }
                                                             </View>
+                                                            <ProfileImage
+                                                                src={
+                                                                    this.state.profileImage !== null ? this.state.profileImageName :
+                                                                        this.state.profileImageName !== "" ? serverAdres + "/profileImages/" + this.state.profileImageName : this.state.profileImageName
+                                                                }
+                                                                style={Shadow, { flex: 1 }}
+                                                                size={ProfileImageSize}
+                                                                profileEditMode={this.state.profileEditMode}
+                                                                onEditLongPress={() => {
+                                                                }}
+                                                                editOnPress={async () => {
+                                                                    this.setState({
+                                                                        modalVisible: true
+                                                                    })
+                                                                }}
+                                                            />
                                                         </View>
 
                                                         <DescriptionCard style={[Shadow, { marginTop: ProfileImageSize / 2, zIndex: -1 }]}>
@@ -579,7 +615,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         position: "absolute",
-        zIndex: 2,
+
     },
     headerControler: {
         width: Dimensions.get("window").width - 50,

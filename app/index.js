@@ -2,6 +2,10 @@ import React, {
     useEffect
 } from 'react';
 
+import {
+  SafeAreaView
+} from 'react-native';
+
 import AsyncStorage from "@react-native-community/async-storage";
 //Navigation
 import { AppContainer } from "./Navigation/index";
@@ -37,7 +41,9 @@ const App = () => {
     })
   });
   return <ApolloProvider client={client}>
-    <AppContainer/>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <AppContainer/>
+    </SafeAreaView>
   </ApolloProvider>
 };
 export default App;
