@@ -134,6 +134,7 @@ class CreateNewTenant extends Component {
                                         style={styles.container}
                                         showsVerticalScrollIndicator={false}
                                         keyboardShouldPersistTaps='always'
+                                        keyboardDismissMode={"on-drag"}
                                     >
                                         <View style={[Shadow, styles.profileContainer]}>
 

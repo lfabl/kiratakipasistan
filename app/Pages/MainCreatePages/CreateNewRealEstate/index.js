@@ -197,6 +197,7 @@ class CreateNewRealEstate extends Component {
                                         contentContainerStyle={{ padding: 20 }}
                                         showsVerticalScrollIndicator={false}
                                         keyboardShouldPersistTaps='always'
+                                        keyboardDismissMode={"on-drag"}
                                     >
                                         <DescriptionCard style={[Shadow, styles.descriptionContainers]}>
                                             <View style={{ flex: 1, alignItems: "center" }}>
