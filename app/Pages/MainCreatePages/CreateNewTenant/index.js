@@ -133,6 +133,7 @@ class CreateNewTenant extends Component {
                                     <ScrollView
                                         style={styles.container}
                                         showsVerticalScrollIndicator={false}
+                                        keyboardShouldPersistTaps='always'
                                     >
                                         <View style={[Shadow, styles.profileContainer]}>
 

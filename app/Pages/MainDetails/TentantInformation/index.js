@@ -457,9 +457,8 @@ class TentantInformation extends Component {
 																	</ImagePicker>
 																	<ScrollView
 																		style={styles.container}
-																		showsVerticalScrollIndicator={
-																			false
-																		}
+																		showsVerticalScrollIndicator={false}
+																		keyboardShouldPersistTaps='always'
 																	>
 																		<View
 																			style={[

@@ -510,6 +510,7 @@ class RealEstateInformation extends Component {
 																		style={styles.scrollContainer}
 																		contentContainerStyle={{ padding: 20 }}
 																		showsVerticalScrollIndicator={false}
+																		keyboardShouldPersistTaps='always'
 																	>
 																		<DescriptionCard
 																			style={[
