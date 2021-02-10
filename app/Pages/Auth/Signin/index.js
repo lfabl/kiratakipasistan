@@ -35,7 +35,7 @@ class Signin extends Component {
         super(props);
         this.passwordInputRef = React.createRef();
         this.state = {
-            userName: "",
+            userNameOrMail: "",
             password: "",
             errorMessage: "",
         }
@@ -47,11 +47,11 @@ class Signin extends Component {
         })
     }
     async signIn() {
-        const { userName, password } = this.state;
-        if (userName !== "" && password !== "") {
+        const { userNameOrMail, password } = this.state;
+        if (userNameOrMail !== "" && password !== "") {
             const md5Password = await md5(password);
             const signinResult = await signin({
-                userName: userName,
+                userNameOrMail: userNameOrMail,
                 password: md5Password
             });
             if (password.length < 5 || password.length > 80) {
@@ -60,9 +60,9 @@ class Signin extends Component {
                 this.setState({
                     errorMessage: "Gönderdiğiniz şifre gerekli kuralları sağlamıyor. Lütfen minimum 5 maximum 80 karakter girin!"
                 })
-            } else if (userName.length < 3 || userName.length > 35) {
+            } else if (userNameOrMail.length === 0 ) {
                 this.setState({
-                    errorMessage: "Gönderdiğiniz kullanıcı adı gerekli kuralları sağlamıyor. Lütfen minimum 3 maximum 80 karakter girin!"
+                    errorMessage: "Lütfen bir kullanıcı adı veya mail giriniz."
                 })
             } else {
                 if (signinResult.code === 200) {
@@ -93,12 +93,12 @@ class Signin extends Component {
             <View style={styles.container}>
                 <View style={styles.inputContainer}>
                     <TextInput
-                        placeholder={"Kullanıcı adı"}
-                        value={this.state.userName}
+                        placeholder={"Kullanıcı adı veya Mail"}
+                        value={this.state.userNameOrMail}
                         onChangeText={(val) => {
                             if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true)
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                            this.setState({ userName: val, errorMessage: "" })
+                            this.setState({ userNameOrMail: val, errorMessage: "" })
                         }}
                         style={{ flex: 1 }}
                         onSubmitEditing={(evt) => {

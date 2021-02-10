@@ -100,7 +100,8 @@ class CreateNewRealEstate extends Component {
         return Toast.show(errorMessage, Toast.LONG, [
             'UIAlertController',
         ]);
-    }
+    };
+
     async fixtureDataConvert(args) {
         return await new Promise(async (resolve, reject) => {
             if (args.length !== 0) {
@@ -467,11 +468,11 @@ class CreateNewRealEstate extends Component {
                                                 backgroundColor: "#192430",
                                             }]}
                                             onPress={async () => {
-                                                /*
+                                                
                                                 this.setState({
                                                     saveStatus: false
                                                 })
-                                                */
+                                                
 
                                                 const newFixtureData = await this.fixtureDataConvert(
                                                     this.state

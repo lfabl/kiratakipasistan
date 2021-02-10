@@ -117,7 +117,7 @@ class RealEstateInformation extends Component {
 
 	changeEditMode(revertTempStatus) {
 		const { editMode } = this.state;
-		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
+		if (Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 
 		/* Edit Mode Control */
@@ -233,7 +233,7 @@ class RealEstateInformation extends Component {
 	}
 
 	revertTempData = () => {
-		const { tempDatas,editMode } = this.state;
+		const { tempDatas, editMode } = this.state;
 		this.props.navigation.setParams(
 			editMode ? { pageName: 'Emlak Bilgileri' } : { pageName: 'Emlak Bilgilerini Düzenle' }
 		);
@@ -533,71 +533,7 @@ class RealEstateInformation extends Component {
 																						height: Normalize(40)
 																					}}
 																				>
-																					{!editMode ? null : (
-																						<TouchableOpacity
-																							style={{
-																								padding: Normalize(10)
-																							}}
-																							onPress={async () => {
-																								this.setState({
-																									saveStatus: false
-																								});
-																								const newFixtureData = await this.fixtureDataConvert(
-																									this.state
-																										.fixtureDatas
-																								);
 
-
-																								await updateRealEstateData(
-																									{
-																										variables: {
-																											realEstateID: this.state.realEstateID,
-																											type: realEstateType,
-																											usageType: usageType,
-																											fixtureDatas: newFixtureData,
-																											title: title,
-																											adress: adress,
-																											rentalType: rentalType,
-																											electricity: electricity,
-																											water: water,
-																											naturalGas: naturalGas,
-																											TCIPNo: TCIPNo,
-																											ownerNameSurname: ownerNameSurname,
-																											ownerManagerPhoneNumber: ownerManagerPhoneNumber,
-																											ownerTcIdentity: ownerTcIdentity,
-																											ownerIban: ownerIban,
-																											detailDues: detailDues,
-																											detailManagerPhoneNumber: detailManagerPhoneNumber,
-																											detailAdditionalInformation: detailAdditionalInformation,
-																											numberOfRoom: numberOfRoom,
-																											purposeOfUsage: purposeOfUsage,
-																											detailRent: detailRent !== "" && detailRent.length !== 0 ? detailRent : "0",
-																											paymentPeriod: {
-																												type: this
-																													.state
-																													.paymentPeriodType,
-																												date: this
-																													.state
-																													.paymentPeriodDate
-																											},
-																											deposit: deposit
-																										}
-																									}
-																								);
-
-																							}}
-																						>
-																							<Icon
-																								name={'save'}
-																								color={'#272727'}
-																								size={Normalize(20)}
-																								style={{
-																									alignSelf:
-																										'flex-start'
-																								}}
-																							/>
-																						</TouchableOpacity>
-																					)}
 																				</View>
 																				<Text
 																					style={
@@ -1061,6 +997,67 @@ class RealEstateInformation extends Component {
 																				</Text>
 																			</TouchableHighlight>
 																		)}
+																		{
+																			!editMode ? null : (
+																				<TouchableHighlight
+																					style={[Shadow, {
+																						marginBottom: BetweenObjectsMargin,
+																						backgroundColor: "#192430",
+																					}]}
+																					onPress={async () => {
+																						this.setState({
+																							saveStatus: false
+																						});
+																						const newFixtureData = await this.fixtureDataConvert(
+																							this.state
+																								.fixtureDatas
+																						);
+																						console.log(newFixtureData)
+
+																						await updateRealEstateData(
+																							{
+																								variables: {
+																									realEstateID: this.state.realEstateID,
+																									type: realEstateType,
+																									usageType: usageType,
+																									fixtureDatas: newFixtureData,
+																									title: title,
+																									adress: adress,
+																									rentalType: rentalType,
+																									electricity: electricity,
+																									water: water,
+																									naturalGas: naturalGas,
+																									TCIPNo: TCIPNo,
+																									ownerNameSurname: ownerNameSurname,
+																									ownerManagerPhoneNumber: ownerManagerPhoneNumber,
+																									ownerTcIdentity: ownerTcIdentity,
+																									ownerIban: ownerIban,
+																									detailDues: detailDues,
+																									detailManagerPhoneNumber: detailManagerPhoneNumber,
+																									detailAdditionalInformation: detailAdditionalInformation,
+																									numberOfRoom: numberOfRoom,
+																									purposeOfUsage: purposeOfUsage,
+																									detailRent: detailRent !== "" && detailRent.length !== 0 ? detailRent : "0",
+																									paymentPeriod: {
+																										type: this
+																											.state
+																											.paymentPeriodType,
+																										date: this
+																											.state
+																											.paymentPeriodDate
+																									},
+																									deposit: deposit
+																								}
+																							}
+																						);
+																					}}
+																				>
+																					<Text style={{
+																						color: "white"
+																					}}>Kaydet</Text>
+																				</TouchableHighlight>
+																			)
+																		}
 																		{editMode ? null : (
 																			<TouchableHighlight
 																				style={[
