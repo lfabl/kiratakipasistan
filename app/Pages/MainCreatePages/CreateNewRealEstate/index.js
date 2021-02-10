@@ -140,6 +140,8 @@ class CreateNewRealEstate extends Component {
             }
         });
     }
+
+
     render() {
         const {
             editMode, realEstateType, usageType, title, adress, rentalType,
@@ -149,9 +151,22 @@ class CreateNewRealEstate extends Component {
         } = this.state
 
         return (
-            <Mutation mutation={newRealEstate}>
+            <Mutation mutation={newRealEstate} onCompleted={(data) => {
+                if (data) {
+                    if (data.newRealEstate.code === 200) {
+                        Toast.show(data.newRealEstate.message, Toast.LONG, [
+                            'UIAlertController',
+                        ]);
+                        this.props.navigation.navigate("RealEstatePortfolio")
+                    }
+                    else {
+                        this.toastMessage({ data });
+                    }
+                }
+            }}>
                 {
-                    (createNewRealEstate, { loading, error, data }) => {
+
+                    (createNewRealEstate, { loading, error, data, }) => {
                         if (loading) {
                             return (
                                 <View
@@ -175,22 +190,7 @@ class CreateNewRealEstate extends Component {
                             )
                         }
                         else {
-                            if (data) {
-                                if (this.state.saveStatus === false) {
-                                    if (data.newRealEstate.code === 200) {
-                                        Toast.show(data.newRealEstate.message, Toast.LONG, [
-                                            'UIAlertController',
-                                        ]);
-                                        this.props.navigation.navigate("RealEstatePortfolio")
-                                    }
-                                    else {
-                                        this.toastMessage({ data });
-                                    }
-                                    this.setState({
-                                        saveStatus: true
-                                    })
-                                }
-                            }
+
                             return (
                                 <View style={styles.container}>
                                     <ScrollView
@@ -468,11 +468,11 @@ class CreateNewRealEstate extends Component {
                                                 backgroundColor: "#192430",
                                             }]}
                                             onPress={async () => {
-                                                
+
                                                 this.setState({
                                                     saveStatus: false
                                                 })
-                                                
+
 
                                                 const newFixtureData = await this.fixtureDataConvert(
                                                     this.state
@@ -486,7 +486,7 @@ class CreateNewRealEstate extends Component {
                                                         usageType: usageType,
                                                         fixtureDatas: fixtureDatas,
                                                         title: title,
-                                                        adress: adress,
+                                                        adress: this.state.adress,
                                                         rentalType: rentalType,
                                                         electricity: electricity,
                                                         water: water,
