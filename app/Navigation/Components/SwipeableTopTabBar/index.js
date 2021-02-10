@@ -47,7 +47,7 @@ const SwipeableTopTabBar = (props) => {
 
 	const screenWidth = Dimensions.get('screen').width;
 	const animation = useRef(new Animated.Value(0)).current;
-	const [ animat, setAnimat ] = useState(true);
+	const [animat, setAnimat] = useState(true);
 	useEffect(() => {
 		setAnimat(false);
 	}, []);
@@ -55,7 +55,7 @@ const SwipeableTopTabBar = (props) => {
 		Animated.timing(animation, {
 			toValue: 1,
 			duration: 500,
-			useNativeDriver: true
+			useNativeDriver: false
 		}).start(({ finished }) => {
 			if (finished) setAnimat(true);
 		});
@@ -64,7 +64,7 @@ const SwipeableTopTabBar = (props) => {
 		Animated.timing(animation, {
 			toValue: 0,
 			duration: 500,
-			useNativeDriver: true
+			useNativeDriver: false
 		}).start(({ finished }) => {
 			if (finished) setAnimat(false);
 		});
@@ -72,11 +72,18 @@ const SwipeableTopTabBar = (props) => {
 	const animationHeight = Dimensions.get('screen').width * 1.25;
 
 	const trans = animation.interpolate({
-		inputRange: [ 0, 1 ],
-		outputRange: [ -animationHeight + 175, -animationHeight + 310 ]
+		inputRange: [0, 1],
+		outputRange: [-animationHeight + 35, -animationHeight + 155]
+	});
+
+	const height = animation.interpolate({
+		inputRange: [0, 1],
+		outputRange: [190, (animationHeight / 2) + 70]
 	});
 	return (
-		<View style={styles.container}>
+		<Animated.View style={[styles.container, {
+			height: height,
+		}]}>
 			<View
 				style={[
 					Shadow,
@@ -199,7 +206,6 @@ const SwipeableTopTabBar = (props) => {
 					styles.defaultCompanentSize,
 					{
 						left: -((screenWidth * 1.25 - screenWidth) / 2),
-						position: 'absolute',
 						overflow: 'hidden',
 						backgroundColor: '#F5F5F5',
 						transform: [
@@ -208,7 +214,7 @@ const SwipeableTopTabBar = (props) => {
 							}
 						],
 						zIndex: 700,
-						flexDirection: 'column-reverse'
+						flexDirection: 'column-reverse',
 					}
 				]}
 			>
@@ -262,7 +268,7 @@ const SwipeableTopTabBar = (props) => {
 					);
 				})}
 			</Animated.View>
-		</View>
+		</Animated.View>
 	);
 };
 

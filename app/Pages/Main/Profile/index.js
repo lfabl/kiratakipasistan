@@ -261,7 +261,7 @@ class Profile extends Component {
                                     }
                                     else {
                                         if (data.getProfile.response.code === 200) {
-                                            return <View style={{ flex: 1, marginTop: GeneralPadding }}>
+                                            return <View style={{ flex: 1, marginTop: GeneralPadding, zIndex: -1 }}>
                                                 <ImagePicker
                                                     visible={this.state.modalVisible}
                                                     setVisible={(val) => {
@@ -599,7 +599,6 @@ class Profile extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: GeneralPadding,
         paddingHorizontal: GeneralPadding,
         flex: 1,
         flexDirection: "column"

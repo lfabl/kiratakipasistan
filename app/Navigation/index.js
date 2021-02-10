@@ -51,7 +51,10 @@ const MainStackTopTabNavigator = createMaterialTopTabNavigator(
         animationEnabled: false,
         tabBarOptions: {
             activeTintColor: "white",
-            inactiveTintColor: "red"
+            inactiveTintColor: "red",
+            style: {
+                zIndex: 99999
+            }
         },
         tabBarPosition: "top",
         initialRouteName: "Home",

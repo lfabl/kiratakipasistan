@@ -129,8 +129,7 @@ class Home extends Component {
 						return <View
 							style={{
 								flex: 1,
-								padding: 20,
-								paddingTop: 60
+								paddingHorizontal: 20,
 							}}
 						>
 							<Text style={{ textAlign: "center", marginBottom: 10 }}>Hoş geldiniz.</Text>

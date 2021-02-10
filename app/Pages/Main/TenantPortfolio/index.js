@@ -359,9 +359,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         flexDirection: "column",
-        paddingTop: GeneralPadding,
         paddingHorizontal: GeneralPadding,
-        marginTop: 20
     },
     newTenantContainer: {
         alignSelf: "flex-start",
