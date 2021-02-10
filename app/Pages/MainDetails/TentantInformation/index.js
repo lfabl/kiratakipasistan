@@ -89,7 +89,7 @@ class TentantInformation extends Component {
 	}
 
 	componentDidMount() {
-		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
+		if (Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 		this.props.navigation.setParams({
 			pageName: 'Kiracı Bilgileri',
@@ -110,7 +110,7 @@ class TentantInformation extends Component {
 
 	changeEditMode(revertTempStatus) {
 		const { profileEditMode } = this.state;
-		if(Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
+		if (Platform.OS === "android") UIManager.setLayoutAnimationEnabledExperimental(true);
 		LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
 
 		/* Edit Mode Control */
@@ -329,14 +329,14 @@ class TentantInformation extends Component {
 																				modalVisible: val
 																			})
 																		}}
-																		onModalHide={async(prop)=>{
+																		onModalHide={async (prop) => {
 																			setTimeout(() => {
-																				if(prop === "phoneCamera"){																					
+																				if (prop === "phoneCamera") {
 																					ImageCropPicker.openCamera({
 																						multiple: false,
 																						maxFiles: 1,
 																						mediaType: "photo",
-		
+
 																					}).then((response) => {
 																						if (response.didCancel === true) {
 																						}
@@ -352,12 +352,12 @@ class TentantInformation extends Component {
 																						}
 																					})
 																				}
-																				else if(prop === "gallery"){
+																				else if (prop === "gallery") {
 																					ImageCropPicker.openPicker({
 																						multiple: false,
 																						maxFiles: 1,
 																						mediaType: "photo",
-		
+
 																					}).then((response) => {
 																						if (response.didCancel === true) {
 																						}
@@ -520,102 +520,7 @@ class TentantInformation extends Component {
 																							}}
 																						/>
 																					</TouchableOpacity>
-																					{!profileEditMode ? null : (
-																						<TouchableOpacity
-																							onPress={async () => {
-																								const variables = {};
-																								this.setState(
-																									{
-																										saveStatus: false
-																									}
-																								);
-																								if (this.state.deleteProfileImage !== false) {
-																									variables.deleteProfileImage = true;
-																									variables.profileImageName = "";
 
-																								}
-																								else if (this.state.profileImage !== null) {
-																									const pathArray = this.state.profileImage.path.toString().split("/");
-																									const name = pathArray[pathArray.length - 1];
-																									const file = new ReactNativeFile({
-																										uri: this.state.profileImage.path,
-																										name: name,
-																										type: this.state.profileImage.mime,
-																									});
-																									variables.profileImage = file
-																								}
-																								updateTenantData(
-																									{
-																										variables: {
-																											tenantID: this
-																												.state
-																												.tenantID,
-																											fullName: this
-																												.state
-																												.fullName,
-																											tcIdentity: this
-																												.state
-																												.tcIdentity,
-																											phoneNumber1: this
-																												.state
-																												.phoneNumber1,
-																											phoneNumber2: this
-																												.state
-																												.phoneNumber2,
-																											tenantAdress: this
-																												.state
-																												.tenantAdress,
-																											profileImageName: this
-																												.state
-																												.profileImageName,
-																											suretyFullName: this
-																												.state
-																												.suretyFullName,
-																											suretyTcIdentity: this
-																												.state
-																												.suretyTcIdentity,
-																											suretyPhoneNumber: this
-																												.state
-																												.suretyPhoneNumber,
-																											suretyAdress: this
-																												.state
-																												.suretyAdress,
-																											profileImage: variables.profileImage,
-																											deleteProfileImage: variables.deleteProfileImage
-																										}
-																									}
-																								);
-																							}}
-																							style={{
-																								padding: Normalize(
-																									10
-																								),
-																								paddingBottom: Normalize(
-																									10
-																								),
-																								paddingRight: Normalize(
-																									10
-																								)
-																							}}
-																						>
-																							<Icon
-																								name={
-																									'save'
-																								}
-																								color={
-																									'#272727'
-																								}
-																								size={Normalize(
-																									20
-																								)}
-																								style={{
-																									alignSelf:
-																										'flex-start',
-																									paddingLeft: 12
-																								}}
-																							/>
-																						</TouchableOpacity>
-																					)}
 																				</View>
 																				<ProfileImage
 																					src={
@@ -1036,7 +941,84 @@ class TentantInformation extends Component {
 																					</TouchableOpacity>
 																				</View>
 																			</DescriptionCard>
+																			{
+																				!profileEditMode ? null : (
+																					<TouchableHighlight
+																						style={[Shadow, {
+																							marginBottom: BetweenObjectsMargin,
+																							backgroundColor: "#192430",
+																						}]}
+																						onPress={async () => {
+																							const variables = {};
+																							this.setState(
+																								{
+																									saveStatus: false
+																								}
+																							);
+																							if (this.state.deleteProfileImage !== false) {
+																								variables.deleteProfileImage = true;
+																								variables.profileImageName = "";
 
+																							}
+																							else if (this.state.profileImage !== null) {
+																								const pathArray = this.state.profileImage.path.toString().split("/");
+																								const name = pathArray[pathArray.length - 1];
+																								const file = new ReactNativeFile({
+																									uri: this.state.profileImage.path,
+																									name: name,
+																									type: this.state.profileImage.mime,
+																								});
+																								variables.profileImage = file
+																							}
+																							updateTenantData(
+																								{
+																									variables: {
+																										tenantID: this
+																											.state
+																											.tenantID,
+																										fullName: this
+																											.state
+																											.fullName,
+																										tcIdentity: this
+																											.state
+																											.tcIdentity,
+																										phoneNumber1: this
+																											.state
+																											.phoneNumber1,
+																										phoneNumber2: this
+																											.state
+																											.phoneNumber2,
+																										tenantAdress: this
+																											.state
+																											.tenantAdress,
+																										profileImageName: this
+																											.state
+																											.profileImageName,
+																										suretyFullName: this
+																											.state
+																											.suretyFullName,
+																										suretyTcIdentity: this
+																											.state
+																											.suretyTcIdentity,
+																										suretyPhoneNumber: this
+																											.state
+																											.suretyPhoneNumber,
+																										suretyAdress: this
+																											.state
+																											.suretyAdress,
+																										profileImage: variables.profileImage,
+																										deleteProfileImage: variables.deleteProfileImage
+																									}
+																								}
+																							);
+																						}}
+																					>
+																						<Text style={{
+																							color: "white"
+																						}}>Kaydet</Text>
+																					</TouchableHighlight>
+																				)
+																			}
 																			{profileEditMode ? null : (
 																				<TouchableHighlight
 																					style={[
