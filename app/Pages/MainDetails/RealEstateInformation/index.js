@@ -312,28 +312,27 @@ class RealEstateInformation extends Component {
 							}
 						}
 						return (
-							<Mutation mutation={updateRealEstate} refetchQueries={[{ query: getRealEstate }]}>
-								{(updateRealEstateData, { loading, error, data }) => {
-									if (loading)
-										return <ActivityIndicator size="large" style={{ flex: 1 }} color={'#1A2430'} />;
+							<Mutation
+								mutation={updateRealEstate}
+								onCompleted={(onCompletedData) => {
+									if (onCompletedData && onCompletedData.length !== 0) {
+										if (onCompletedData.updateRealEstate.code === 200) {
+											Toast.show(onCompletedData.updateRealEstate.message, Toast.LONG, [
+												'UIAlertController'
+											]);
+											this.changeEditMode(false);
+										} else {
+											console.log(onCompletedData);
+											this.toastMessage({ data: onCompletedData });
+										}
+									}
+								}}
+								refetchQueries={[{ query: getRealEstate }]}
+							>
+								{(updateRealEstateData, { loading, error }) => {
+									if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} color={'#1A2430'} />;
 									else if (error) return <View>{alert('Bir hata oluştu' + error)}</View>;
 									else {
-										if (data) {
-											if (this.state.saveStatus === false) {
-												if (data.updateRealEstate.code === 200) {
-													Toast.show(data.updateRealEstate.message, Toast.LONG, [
-														'UIAlertController'
-													]);
-													this.changeEditMode(false);
-												} else {
-													this.toastMessage({ data });
-												}
-												this.setState({
-													saveStatus: true
-												});
-											}
-										}
-
 										return (
 											<Query
 												query={getRealEstate}
