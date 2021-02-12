@@ -20,7 +20,7 @@ import {
 	home
 } from '../../../Server/graphql/Queries/home';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import OneSignal from "react-native-onesignal";
 import { withNavigationFocus } from 'react-navigation';
 
 class Home extends Component {
@@ -60,6 +60,22 @@ class Home extends Component {
 	}
 
 	async componentDidMount() {
+		OneSignal.addEventListener("opened", (openedEvent) => {
+			const { action, notification } = openedEvent;
+
+			if (notification.payload && notification.payload.additionalData && notification.payload.additionalData) {
+				const data = notification.payload.additionalData;
+				if (data.pageName) {
+					if (data.pageName === "RealEstateInformation") {
+						this.props.navigation.navigate(data.pageName, {
+							realEstateID: data.pageID
+						});
+					}
+
+				}
+			}
+		});
+
 		BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
 		this.props.navigation.setParams({
 			pageName: 'Ana Sayfa'
@@ -126,6 +142,7 @@ class Home extends Component {
 					} else if (error) {
 						return <View>{alert('Bir hata oluştu ' + error)}</View>;
 					} else {
+						console.log("orginialData", originalData)
 						return <View
 							style={{
 								flex: 1,

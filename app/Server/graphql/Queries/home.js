@@ -17,7 +17,8 @@ export const home = gql`
                     title,
                     contract {
                         id,
-                        contractDate
+                        contractDate,
+                        contractPeriod
                     }
                 },
                 totalEstatesCount,

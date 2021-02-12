@@ -54,6 +54,7 @@ class Approachs extends Component {
             <FlatList
                 data={data}
                 renderItem={({ item, index }) => {
+                    console.log((new Date() - new Date(item.contract.contractDate)))
                     return <TouchableOpacity
                         key={index}
                         onPress={() => {

@@ -24,7 +24,8 @@ class Loading extends Component {
                 });
                 if (userTokenControlResult.code === 200) {
                     setTimeout(() => {
-                        OneSignal.init(onesignalInitID, { kOSSettingsKeyAutoPrompt: true });
+                        OneSignal.setLogLevel(6, 0);
+                        OneSignal.init(onesignalInitID, { kOSSettingsKeyAutoPrompt: false, kOSSettingsKeyInAppLaunchURL: false, kOSSettingsKeyInFocusDisplayOption: 2 });
                         OneSignal.inFocusDisplaying(2);
                         OneSignal.sendTag("user_id", userTokenControlResult.userID);
                         this.props.navigation.navigate("Home");

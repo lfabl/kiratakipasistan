@@ -9,6 +9,7 @@ import {
     Text
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import moment from "moment";
 class PastEstates extends Component {
     static navigationOptions = ({ navigation }) => {
         let options = {
@@ -47,13 +48,13 @@ class PastEstates extends Component {
     }
     render() {
         const data = this.props.navigation.dangerouslyGetParent().state.params.pastEstateData;
-        console.warn(data);
         return <View
             style={styles.container}
         >
             <FlatList
                 data={data}
                 renderItem={({ item, index }) => {
+                    const endDate =  moment(new Date(item.contract.contractDate)).add(parseInt(item.contract.contractPeriod), "years")
                     return <TouchableOpacity
                         key={index}
                         onPress={() => {
@@ -85,10 +86,10 @@ class PastEstates extends Component {
                             </Text>
                             <Text
                                 style={{
-                                    
+
                                 }}
                             >
-                                {Math.floor((new Date() - new Date(item.contract.contractDate)) / (1000 * 3600 * 24))} gün
+                                {Math.abs(Math.floor((new Date() - new Date(endDate)) / (1000 * 3600 * 24)))} gün
                             </Text>
                         </View>
                     </TouchableOpacity>
